@@ -46,11 +46,16 @@ const StatusCardsRow = () => {
   const [dashboardData, setDashboardData] = useState(null);
   const therapistId = localStorage.getItem("therapistId");
   const apiUrl = import.meta.env.VITE_API_URL;
+  const therapistjwt = localStorage.getItem('therapistjwt');
 
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const res = await axios.get(`${apiUrl}/therapist/dashboard/${therapistId}`);
+        const res = await axios.get(`${apiUrl}/therapist/dashboard/${therapistId}`, {
+          headers: {
+            Authorization: `Bearer ${therapistjwt}`,
+          },
+        });
         console.log("This is the response for status card: ", res.data);
         setDashboardData(res.data);
       } catch (err) {

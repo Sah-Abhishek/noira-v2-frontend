@@ -4,6 +4,7 @@ import { MuiOtpInput } from 'mui-one-time-password-input';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import useUserStore from '../store/UserStore.jsx'
 
 const OtpInput = () => {
   const navigate = useNavigate();
@@ -12,6 +13,7 @@ const OtpInput = () => {
   const [errMsg, setErrMsg] = useState('');
   const apiUrl = import.meta.env.VITE_API_URL;
   const { purpose } = useParams();  // e.g. "login", "register", "password_reset"
+  const { setUser } = useUserStore();
 
   const [loading, setLoading] = useState(false);
   const handleChange = (newValue) => {
@@ -34,12 +36,14 @@ const OtpInput = () => {
 
       if (response.data.success) {
         localStorage.setItem("userjwt", response.data.token);
+        localStorage.setItem("userId", response.data.user._id);
+        setUser(response.data.user);
 
         // Redirect based on purpose
         if (purpose === "login") {
           navigate(from, { replace: true });
         } else if (purpose === "register") {
-          navigate("/allservicespage");
+          navigate("/user/userprofile");
         } else if (purpose === "password_reset") {
           navigate("/reset-password-success");
         } else {

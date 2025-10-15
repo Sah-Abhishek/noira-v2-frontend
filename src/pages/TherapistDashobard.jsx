@@ -38,9 +38,9 @@ const TherapistDashboard = () => {
         {/* <RecentFeedback /> */}
 
         {/* Training & Policies */}
-        <div>
-          <TrainingPolicies />
-        </div>
+        {/* <div> */}
+        {/*   <TrainingPolicies /> */}
+        {/* </div> */}
       </main>
     </div>
   );

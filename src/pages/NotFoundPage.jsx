@@ -1,8 +1,9 @@
 
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 
 const NotFoundPage = () => {
+  const navigate = useNavigate();
   return (
     <div className="min-h-screen bg-black text-white flex items-center justify-center px-4">
       <div className="max-w-xl text-center">
@@ -12,13 +13,13 @@ const NotFoundPage = () => {
           Sorry, the page you're looking for doesn't exist or has been moved.
         </p>
 
-        <Link
-          to="/"
+        <button
+          onClick={() => navigate(-1)}
           className="inline-flex items-center mt-6 px-6 py-3 bg-[#C49E5B] text-black font-semibold rounded-md hover:bg-yellow-400 transition"
         >
           <ArrowLeft className="mr-2" size={18} />
-          Back to Home
-        </Link>
+          Go Back
+        </button>
       </div>
     </div>
   );

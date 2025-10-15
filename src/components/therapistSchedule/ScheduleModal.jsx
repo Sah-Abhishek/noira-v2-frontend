@@ -17,6 +17,9 @@ export default function ScheduleModal({
   const apiUrl = import.meta.env.VITE_API_URL;
   const therapistId = localStorage.getItem("therapistId");
   const [newSlots, setNewSlots] = useState([]);
+  const therapistjwt = localStorage.getItem("therapistjwt");
+  const [cleaDarLoading, setClearDayLoading] = useState(false);
+
 
   if (!isModalOpen) return null;
 
@@ -77,13 +80,18 @@ export default function ScheduleModal({
       };
 
     try {
+      setClearDayLoading(true);
       const endpoint = copyType
         ? `${apiUrl}/therapist/availability/copy`
         : `${apiUrl}/therapist/addAvailability`;
 
       const res = await fetch(endpoint, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${therapistjwt}`, // ✅ Add JWT here
+
+        },
         body: JSON.stringify(payload),
       });
 
@@ -101,6 +109,8 @@ export default function ScheduleModal({
     } catch (err) {
       console.error(err);
       toast.error(err.message || "Something went wrong while saving schedule");
+    } finally {
+      setClearDayLoading(false);
     }
   };
 
@@ -149,9 +159,14 @@ export default function ScheduleModal({
 
   const clearDay = async () => {
     try {
+
+      setClearDayLoading(true);
       const res = await fetch(`${apiUrl}/therapist/date`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${therapistjwt}`
+        },
         body: JSON.stringify({
           therapistId,
           date: selectedDay,
@@ -179,6 +194,8 @@ export default function ScheduleModal({
     } catch (err) {
       console.error(err);
       toast.error(err.message || "Something went wrong while clearing the day");
+    } finally {
+      setClearDayLoading(false);
     }
   };
 
@@ -368,17 +385,44 @@ export default function ScheduleModal({
         <div className="flex space-x-3">
           <button
             onClick={handleSave}
-            className="bg-primary hover:bg-amber-500 flex-1 py-3 rounded-xl text-black font-semibold"
+            disabled={
+              cleaDarLoading ||
+              !availabilityData[selectedDay] ||
+              availabilityData[selectedDay].length === 0
+            } // ✅ disable if no slots
+            className={`flex-1 py-3 rounded-xl font-semibold transition-all
+    ${cleaDarLoading ||
+                !availabilityData[selectedDay] ||
+                availabilityData[selectedDay].length === 0
+                ? "bg-primary opacity-50 cursor-not-allowed text-black"
+                : "bg-primary hover:bg-amber-500 text-black"
+              }`}
           >
-            <FaSave className="inline mr-2" />{" "}
-            {copyType ? "Save & Copy" : "Save"}
+            {cleaDarLoading ? (
+              <span>Saving...</span>
+            ) : (
+              <>
+                <FaSave className="inline mr-2" /> {copyType ? "Save & Copy" : "Save"}
+              </>
+            )}
           </button>
-          <button
-            onClick={clearDay}
-            className="glass-morphism flex-1 py-3 rounded-xl border border-red-400 text-red-400 hover:bg-red-500 hover:bg-opacity-20 transition-all"
-          >
-            <FaTrash className="inline mr-2" /> Clear Day
-          </button>
+          {/*       <button */}
+          {/*         onClick={clearDay} */}
+          {/*         disabled={cleaDarLoading} // ✅ disable while loading */}
+          {/*         className={`glass-morphism flex-1 py-3 rounded-xl border border-red-400 transition-all */}
+          {/* ${cleaDarLoading */}
+          {/*             ? "opacity-50 cursor-not-allowed" */}
+          {/*             : "text-red-400 hover:bg-red-500 hover:bg-opacity-20" */}
+          {/*           }`} */}
+          {/*       > */}
+          {/*         {cleaDarLoading ? ( */}
+          {/*           <span>Clearing...</span> // ✅ feedback while disabled */}
+          {/*         ) : ( */}
+          {/*           <> */}
+          {/*             <FaTrash className="inline mr-2" /> Clear Day */}
+          {/*           </> */}
+          {/*         )} */}
+          {/*       </button> */}
         </div>
       </div>
     </div>

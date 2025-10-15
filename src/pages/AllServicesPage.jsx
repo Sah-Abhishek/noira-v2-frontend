@@ -12,25 +12,29 @@ import massage from "../assets/icons/icons8-spa-48.png";
 import useBookingStore from "../store/bookingStore";
 import { useLocation, useNavigate } from "react-router-dom";
 import StickyCartSummary from "../components/ChooseTherapist/StickyCartSummary";
+import PostalCodeModal from "../components/PostalCodeModal";
+import useUserStore from "../store/UserStore";
 
 export default function AllServicesPage() {
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedOptions, setSelectedOptions] = useState({});
-  const { cart, setCart } = useBookingStore();
+  const { cart, setCart, setSelectedTherapist } = useBookingStore();
   const navigate = useNavigate();
   const location = useLocation();
+  const isPostalCodeSaved = sessionStorage.getItem("postalCode") ? true : false;
+  const [isPostalCodeModalOpen, setIsPostalCodeModalOpen] = useState(!isPostalCodeSaved);
+  const { user } = useUserStore();
 
-  const authToken = localStorage.getItem("userjwt");
+  useEffect(() => {
+    setSelectedTherapist();
+  }, []);
+
   const apiUrl = import.meta.env.VITE_API_URL;
 
   const fetchServices = async () => {
     try {
-      const response = await axios.get(`${apiUrl}/services/list`, {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
-      });
+      const response = await axios.get(`${apiUrl}/services/list`);
 
       if (Array.isArray(response.data)) {
         setServices(response.data);
@@ -87,7 +91,6 @@ export default function AllServicesPage() {
 
   const ServiceSkeleton = () => (
     <div className="service-card rounded-3xl overflow-hidden gold-foil p-8 animate-pulse h-64"></div>
-
   );
 
   return (
@@ -118,10 +121,7 @@ export default function AllServicesPage() {
               return (
                 <div
                   key={service._id}
-                  className={`service-card mb-30 rounded-3xl overflow-hidden gold-foil group cursor-pointer ${cart?.serviceId === service._id
-                    ? "ring-2 ring-noira-gold"
-                    : ""
-                    }`}
+                  className="service-card mb-30 rounded-3xl overflow-hidden gold-foil group cursor-pointer"
                   style={{ backgroundImage: `url(${bg})` }}
                 >
                   <div className="specular-sweep"></div>
@@ -130,7 +130,6 @@ export default function AllServicesPage() {
                   <div className="glass-panel rounded-3xl p-6 m-4 h-[calc(100%-2rem)] relative z-10">
                     <div className="flex items-start justify-between mb-6">
                       <div className="p-3 bg-noira-gold/10 rounded-2xl backdrop-blur-sm">
-                        {/* Render icon if function, else image */}
                         {typeof IconOrImg === "function" ? (
                           <IconOrImg className="text-noira-gold text-2xl" />
                         ) : (
@@ -145,7 +144,11 @@ export default function AllServicesPage() {
                         <span className="price-display bg-gradient-to-r from-noira-gold to-noira-gold-light text-noira-black px-3 py-1 rounded-full text-xs font-bold opacity-80">
                           {selectedOpt
                             ? `£${selectedOpt.price.amount}`
-                            : "£0"}
+                            : `From £${Math.min(
+                              ...service.options.map(
+                                (opt) => opt.price.amount
+                              )
+                            )}`}
                         </span>
                       </div>
                     </div>
@@ -160,39 +163,29 @@ export default function AllServicesPage() {
                     {/* Options */}
                     <div className="mb-6">
                       <h4 className="text-noira-gold text-xs font-medium mb-3 uppercase tracking-wider">
-                        {authToken ? "Select Duration" : "Pricing"}
+                        Select Duration
                       </h4>
 
-
-                      {authToken ? (
-                        <div className="flex flex-wrap gap-2">
-                          {service.options.map((opt, index) => {
-                            const isActive = selectedOpt?._id === opt._id;
-                            return (
-                              <button
-                                key={opt._id}
-                                onClick={() =>
-                                  handleSelect(service, opt, index)
-                                }
-                                className={`duration-chip px-4 py-2 rounded-full text-xs text-noira-gold transition-all ${isActive ? "selected" : ""
-                                  }`}
-                              >
-                                {opt.durationMinutes} min • £
-                                {opt.price.amount}
-                              </button>
-                            );
-                          })}
-                        </div>
-                      ) : (
-                        <button
-                          onClick={() =>
-                            navigate("/userlogin", { state: { from: location } })
-                          }
-                          className="px-4 py-2 rounded-full text-xs font-semibold bg-noira-gold text-black hover:opacity-90 transition"
-                        >
-                          Login to see prices
-                        </button>
-                      )}
+                      <div className="flex flex-wrap gap-2">
+                        {service.options.map((opt, index) => {
+                          const isActive = selectedOpt?._id === opt._id;
+                          return (
+                            <button
+                              key={opt._id}
+                              onClick={() =>
+                                handleSelect(service, opt, index)
+                              }
+                              className={`duration-chip px-4 py-2 rounded-full text-xs transition-all duration-300 ${isActive
+                                  ? "bg-noira-gold text-black font-semibold shadow-lg ring-2 ring-noira-gold/50 transform scale-110 animate-pulse"
+                                  : "text-noira-gold border border-noira-gold hover:bg-noira-gold/10 hover:scale-105"
+                                }`}
+                            >
+                              {opt.durationMinutes} min • £
+                              {opt.price.amount}
+                            </button>
+                          );
+                        })}
+                      </div>
                     </div>
 
                     <div className="flex items-center justify-between pt-4 border-t border-noira-gold/20">
@@ -212,9 +205,15 @@ export default function AllServicesPage() {
 
         {/* Sticky Cart Summary */}
         {Object.keys(selectedOptions).length > 0 && (
-          <StickyCartSummary />
+          <StickyCartSummary isAbled={true} />
         )}
       </div>
+      {!user?.address && (
+        <PostalCodeModal
+          isOpen={isPostalCodeModalOpen}
+          onClose={() => setIsPostalCodeModalOpen(false)}
+        />
+      )}
     </div>
   );
 }

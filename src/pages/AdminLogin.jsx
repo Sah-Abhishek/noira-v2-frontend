@@ -18,7 +18,8 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import useUserStore from "../store/UserStore";
 
 // Validation schema
 const schema = Yup.object().shape({
@@ -33,6 +34,7 @@ export default function AdminLogin() {
   const navigate = useNavigate();
   const [errorMsg, setErrorMsg] = useState("");
   const apiUrl = import.meta.env.VITE_API_URL;
+  const { user, setUser } = useUserStore();
 
   const {
     register,
@@ -59,6 +61,7 @@ export default function AdminLogin() {
         localStorage.setItem(`${role}Id`, response.data.therapistId);
         localStorage.setItem("userId", response.data.userId);
         localStorage.setItem("firstname", response.data.name.first);
+        setUser(response.data.therapist?.userId);
 
 
         console.log("This is the token: ", response.data);
@@ -80,11 +83,11 @@ export default function AdminLogin() {
     <div className="min-h-screen bg-[#0f0f0f] text-white flex items-center justify-center px-4">
       <div className="max-w-md w-full bg-[#1c1c1c] rounded-xl shadow-lg p-8 space-y-6 relative">
         {/* Logo and Title */}
-        <div className="flex flex-col items-center space-y-2">
-          <div className="flex items-center h-10 mt-10">
-            <img src={noira} alt="Logo" className="h-10 sm:h-15 mb-10" />
-          </div>
-          <p className="text-gray-400 text-medium font-medium">Wellness Platform</p>
+        <div className="flex flex-col items-center">
+          <Link to='/' >
+            <img src={noira} alt="Logo" className="h-10 sm:h-12 mb-2" />
+            <p className="text-gray-400 font-medium">Wellness Platform</p>
+          </Link>
         </div>
 
         {/* Role Tabs */}
@@ -154,11 +157,11 @@ export default function AdminLogin() {
           </div>
 
           {/* Forgot Password */}
-          <div className="text-right">
-            <a href="#" className="text-sm text-yellow-400 hover:underline">
-              Forgot Password?
-            </a>
-          </div>
+          {/* <div className="text-right"> */}
+          {/*   <a href="#" className="text-sm text-yellow-400 hover:underline"> */}
+          {/*     Forgot Password? */}
+          {/*   </a> */}
+          {/* </div> */}
 
           {/* Sign In Button */}
           <button
@@ -188,21 +191,20 @@ export default function AdminLogin() {
         </form>
 
         {/* Or Divider */}
-        <div className="flex items-center gap-2 text-gray-400 text-sm">
-          <hr className="flex-1 border-gray-600" />
-          Or continue with
-          <hr className="flex-1 border-gray-600" />
-        </div>
-
-        {/* Social Buttons */}
-        <div className="flex gap-4">
-          <button className="w-full bg-[#2b2b2b] hover:bg-[#3b3b3b] py-2 rounded-md flex items-center justify-center gap-2 border border-gray-600 text-white">
-            <FaGoogle /> Google
-          </button>
-          <button className="w-full bg-[#2b2b2b] hover:bg-[#3b3b3b] py-2 rounded-md flex items-center justify-center gap-2 border border-gray-600 text-white">
-            <FaApple /> Apple
-          </button>
-        </div>
+        {/* <div className="flex items-center gap-2 text-gray-400 text-sm"> */}
+        {/*   <hr className="flex-1 border-gray-600" /> */}
+        {/*   Or continue with */}
+        {/*   <hr className="flex-1 border-gray-600" /> */}
+        {/* </div> */}
+        {/**/}
+        {/* <div className="flex gap-4"> */}
+        {/*   <button className="w-full bg-[#2b2b2b] hover:bg-[#3b3b3b] py-2 rounded-md flex items-center justify-center gap-2 border border-gray-600 text-white"> */}
+        {/*     <FaGoogle /> Google */}
+        {/*   </button> */}
+        {/*   <button className="w-full bg-[#2b2b2b] hover:bg-[#3b3b3b] py-2 rounded-md flex items-center justify-center gap-2 border border-gray-600 text-white"> */}
+        {/*     <FaApple /> Apple */}
+        {/*   </button> */}
+        {/* </div> */}
 
         {/* Footer */}
         <div className="text-center text-xs text-gray-500 pt-6 space-y-2">

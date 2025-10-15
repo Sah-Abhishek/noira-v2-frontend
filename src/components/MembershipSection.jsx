@@ -39,13 +39,12 @@ export default function MembershipSection() {
 
         {/* Closing Statement */}
         <p className="leading-relaxed">
-          Membership is strictly limited and extended by invitation only.
-        </p>
+          Membership is strictly limited and extended         </p>
 
         {/* Button */}
-        <button className="px-6 py-3 border r-[#C49E5B] text-[#C49E5B] font-semibold rounded hover:bg-[#C49E5B] hover:text-black transition-all duration-300">
-          REQUEST
-        </button>
+        {/* <button className="px-6 py-3 border r-[#C49E5B] text-[#C49E5B] font-semibold rounded hover:bg-[#C49E5B] hover:text-black transition-all duration-300"> */}
+        {/*   REQUEST */}
+        {/* </button> */}
       </div>
     </div>
   );

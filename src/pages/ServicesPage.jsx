@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { Helmet } from "react-helmet";
+
 import FloatingCartButton from "../components/ServicesPage/FloatingActionButton.jsx";
 import useBookingStore from "../store/bookingStore.jsx";
 import CartPage from "./CartPage.jsx";
@@ -14,19 +16,14 @@ const ServicesPage = () => {
   const authToken = localStorage.getItem("userjwt");
   const apiUrl = import.meta.env.VITE_API_URL;
 
-  // Zustand store
   const { cart, setCart, resetCart, services, setServices } = useBookingStore();
 
   const fetchServices = async () => {
-    console.log("This is the authToken: ", authToken);
     try {
       const response = await axios.get(`${apiUrl}/services/list`, {
-        headers: {
-          authorization: `{Bearer ${authToken}`,
-        },
+        headers: { Authorization: `Bearer ${authToken}` },
       });
-      console.log("These are the services: ", response.data);
-      setServices(response.data); // ✅ store in Zustand
+      setServices(response.data);
     } catch (error) {
       console.error("Failed to fetch services:", error);
     } finally {
@@ -35,7 +32,6 @@ const ServicesPage = () => {
   };
 
   useEffect(() => {
-    // Only fetch if not already in store (persisted)
     if (!services || services.length === 0) {
       fetchServices();
     } else {
@@ -43,9 +39,8 @@ const ServicesPage = () => {
     }
   }, []);
 
-  // Add only one service
   const addToCart = (service, optionIndex) => {
-    const option = service.options[optionIndex]; // 👈 get chosen option
+    const option = service.options[optionIndex];
     setCart({
       serviceId: service._id,
       serviceName: service.name,
@@ -62,47 +57,66 @@ const ServicesPage = () => {
   const hasCart = cart && Object.keys(cart).length > 0;
 
   return (
-    <div className="bg-[#0f172a] w-full text-white">
-      {/* Hero Section */}
+    <div className="bg-[#0f172a] text-white min-h-screen">
+      {/* ✅ SEO Meta Tags */}
+      <Helmet>
+        <title>Luxury Massage Services in London | Noira Wellness</title>
+        <meta
+          name="description"
+          content="Explore Noira's luxury massage services in London. Choose from elite, discreet, and mobile massage experiences tailored to your energy and schedule."
+        />
+        <link rel="canonical" href="https://www.noira.co.uk/services" />
+        <meta property="og:title" content="Luxury Massage Services in London | Noira Wellness" />
+        <meta
+          property="og:description"
+          content="Indulge in premium at-home massage treatments across Mayfair, Chelsea, Knightsbridge & Canary Wharf. Book your bespoke experience today."
+        />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://www.noira.co.uk/services" />
+        <meta name="twitter:card" content="summary_large_image" />
+      </Helmet>
+
+      {/* Hero Section (contains main H1 for SEO) */}
       <HeroSectionServices />
 
-      {/* Services and Cart */}
-      <div className="bg-black w-full px-4 py-12 ">
-        <div
-          className={`max-w-7xl transition-all duration-500 ease-in-out mx-auto gap-6 ${hasCart
-            ? "flex flex-col lg:flex-row" // show side by side
-            : "flex justify-center" // center services when no cart
-            }`}
+      {/* Main Content */}
+      <main className="bg-black w-full px-4 py-12">
+        <section
+          className={`max-w-7xl mx-auto transition-all duration-500 ease-in-out gap-6 ${
+            hasCart ? "flex flex-col lg:flex-row" : "flex justify-center"
+          }`}
+          aria-labelledby="massage-services"
         >
-          {/* Service Cards Section */}
-          <div
-            className={` ${hasCart ? "flex-1" : "w-full lg:w-3/4"} space-y-6`}
-          >
+          {/* Heading for crawlers + accessibility */}
+          <h2 id="massage-services" className="sr-only">
+            Massage Services List
+          </h2>
+
+          {/* Services Grid */}
+          <div className={`${hasCart ? "flex-1" : "w-full lg:w-3/4"} space-y-6`}>
             {loading
               ? Array.from({ length: 3 }).map((_, i) => (
-                <MassageServiceSkeleton key={i} />
-              ))
+                  <MassageServiceSkeleton key={i} />
+                ))
               : services.map((s) => (
-                <MassageServiceCard
-                  key={s._id}
-                  service={s}
-                  cart={cart ? [cart] : []}
-                  addToCart={addToCart}
-                  removeFromCart={removeFromCart}
-                />
-              ))}
+                  <MassageServiceCard
+                    key={s._id}
+                    service={s}
+                    cart={cart ? [cart] : []}
+                    addToCart={addToCart}
+                    removeFromCart={removeFromCart}
+                  />
+                ))}
           </div>
 
-          {/* Cart Section (only if cart has items) */}
+          {/* Cart Sidebar */}
           {hasCart && (
-            <div className="w-full lg:w-[450px]">
-              <div className="lg:sticky lg:top-24">
-                <CartPage />
-              </div>
-            </div>
+            <aside className="w-full lg:w-[450px] lg:sticky lg:top-24">
+              <CartPage />
+            </aside>
           )}
-        </div>
-      </div>
+        </section>
+      </main>
 
       {/* Footer */}
       <FooterSection />
@@ -110,10 +124,8 @@ const ServicesPage = () => {
       {/* Floating Cart Button */}
       <FloatingCartButton
         cart={cart ? [cart] : []}
-        disabled={!hasCart} // ✅ disable if no service selected
-        onChooseTherapist={() =>
-          console.log("Go to date & time picker")
-        }
+        disabled={!hasCart}
+        onChooseTherapist={() => console.log("Go to date & time picker")}
       />
     </div>
   );

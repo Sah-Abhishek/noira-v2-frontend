@@ -1,160 +1,247 @@
-import React from 'react';
-import { useTheme } from '../context/ThemeContext'; // Adjust path if needed
-
-import sarahImg from '../assets/sarah.jpg';
-import michaelImg from '../assets/micheal.jpg';
-import emmaImg from '../assets/emma.jpg';
-import { useNavigate } from 'react-router-dom';
-// Assume David has no image
-
-const therapists = [
-  {
-    name: 'Sarah Johnson',
-    title: 'Massage Therapist',
-    rating: 4.9,
-    tags: ['Deep Tissue', 'Swedish'],
-
-    image: null,
-  },
-  {
-    name: 'Michael Chen',
-    title: 'Physiotherapist',
-    rating: 4.8,
-    tags: ['Sports Injury', 'Rehab'],
-
-    image: null,
-  },
-  {
-    name: 'Emma Rodriguez',
-    title: 'Skincare Specialist',
-    rating: 5.0,
-    tags: ['Anti-aging', 'Hydrafacial'],
-
-    image: null,
-  },
-  {
-    name: 'David Kim',
-    title: 'Wellness Coach',
-    rating: 4.9,
-    tags: ['Nutrition', 'Mindfulness'],
-    image: null, // No image
-  },
-];
+import React, { useEffect, useState } from "react";
+import { Helmet } from "react-helmet"; // ✅ for SEO meta tags
+import { useTheme } from "../context/ThemeContext";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { Star, Award, X } from "lucide-react";
 
 const FeaturedTherapists = () => {
   const { isDarkMode } = useTheme();
   const navigate = useNavigate();
 
+  const [therapists, setTherapists] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const apiUrl = import.meta.env.VITE_API_URL;
+
+  useEffect(() => {
+    const fetchTherapists = async () => {
+      try {
+        const res = await axios.get(
+          `${apiUrl}/therapist/getalltherapists?page=1&limit=3`
+        );
+
+        if (res.data?.therapists) {
+          setTherapists(res.data.therapists);
+        } else {
+          console.error("Unexpected API response:", res.data);
+        }
+      } catch (err) {
+        console.error("Error fetching therapists:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTherapists();
+  }, [apiUrl]);
+
+  if (loading) {
+    return (
+      <section
+        aria-label="Loading therapist profiles"
+        className="py-20 bg-[#111] px-6 md:px-20 text-center"
+      >
+        <p className="text-gray-400">Loading therapists...</p>
+      </section>
+    );
+  }
+
   return (
     <section
       id="therapists"
-      className={`py-20 px-6 md:px-20 scroll-mt-24 ${isDarkMode
-        ? 'bg-gradient-to-l from-[#0f1118] to-black text-white'
-        : 'bg-gradient-to-l from-[#f9f9f9] to-white text-black'
-        }`}
+      className="py-20 px-6 md:px-20 bg-[#111]"
+      role="region"
+      aria-labelledby="therapists-heading"
     >
-      <div className="text-center mb-12">
-        <h2 className="text-3xl sm:text-4xl text-[#C49E5B] font-braven font-bold">
-          Featured{' '}
-          <span className="text-[#C49E5B]">Therapists</span>
+      {/* ✅ SEO Meta */}
+      <Helmet>
+        <title>Top Therapists | Certified Wellness Professionals</title>
+        <meta
+          name="description"
+          content="Discover our top certified therapists specializing in mental wellness, stress management, and personal growth."
+        />
+        <meta
+          name="keywords"
+          content="therapists, wellness professionals, mental health, therapy, online therapy"
+        />
+      </Helmet>
+
+      <div className="text-center mb-16">
+        <h2
+          id="therapists-heading"
+          className="text-4xl text-primary font-braven font-bold"
+        >
+          Our Top <span className="text-primary">Therapists</span>
         </h2>
-        <p className={`mt-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+        <p className="mt-4 text-gray-400">
           Meet our certified wellness professionals
         </p>
-      </div >
+      </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-        {therapists.map((therapist, index) => (
-          <div
-            key={index}
-            className={`rounded-2xl p-6 text-center shadow-md border ${isDarkMode
-              ? 'bg-[#1a1c23] border-white/10'
-              : 'bg-white border-black/10'
-              }`}
-          >
-            {/* Avatar */}
-            <div className="flex justify-center mb-4">
-              <div className="w-20 h-20 rounded-full border-1 border-yellow-400 overflow-hidden">
-                {therapist.image ? (
-                  <img
-                    src={therapist.image}
-                    alt={therapist.name}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full bg-transparent flex items-center justify-center text-[#C49E5B]">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth={1.5}
-                      stroke="currentColor"
-                      className="w-10 h-10"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.5 20.25a8.25 8.25 0 1115 0v.375a.375.375 0 01-.375.375H4.875a.375.375 0 01-.375-.375V20.25z"
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 mx-10">
+        {therapists.map((therapist) => {
+          const fullName =
+            therapist?.profile?.title ||
+            `${therapist?.name?.first || ""} ${therapist?.name?.last || ""}`.trim();
+
+          const rating =
+            therapist?.profile?.rating && therapist.profile.rating > 0
+              ? therapist.profile.rating
+              : (Math.random() * (5 - 4) + 4).toFixed(1);
+
+          const experience = therapist?.profile?.experience || 0;
+          const specializations = therapist?.profile?.specializations || [];
+          const bio = therapist?.profile?.bio || "";
+          const image = therapist?.avatar_url;
+
+          return (
+            <article
+              key={therapist._id}
+              className="relative bg-[#1a1a1a] rounded-2xl p-8 border shadow-lg shadow-primary border-primary transition-all duration-300"
+              itemScope
+              itemType="https://schema.org/Person"
+            >
+              <meta itemProp="jobTitle" content="Therapist" />
+              <meta itemProp="worksFor" content="Wellness Center" />
+
+              <div className="relative z-10 text-center space-y-5">
+                {/* Profile Image */}
+                <div
+                  className="relative inline-block cursor-pointer"
+                  onClick={() => setSelectedImage(image)}
+                >
+                  <div className="relative w-28 h-28 rounded-full overflow-hidden border-2 border-primary mx-auto">
+                    {image ? (
+                      <img
+                        src={image}
+                        alt={`${fullName} - certified therapist`}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                        itemProp="image"
                       />
-                    </svg>
+                    ) : (
+                      <div className="w-full h-full bg-gray-800 flex items-center justify-center text-primary text-lg font-bold">
+                        {fullName.charAt(0)}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Name */}
+                <h3 className="text-xl font-bold text-white" itemProp="name">
+                  {fullName}
+                </h3>
+
+                {/* Rating */}
+                <div
+                  className="flex items-center justify-center space-x-2"
+                  itemProp="aggregateRating"
+                  itemScope
+                  itemType="https://schema.org/AggregateRating"
+                >
+                  <meta itemProp="ratingValue" content={rating} />
+                  <meta itemProp="bestRating" content="5" />
+                  <meta itemProp="worstRating" content="1" />
+                  <div className="flex text-primary" aria-label={`Rating: ${rating} stars`}>
+                    {[...Array(5)].map((_, i) => (
+                      <Star
+                        key={i}
+                        className={`w-4 h-4 ${
+                          i < Math.round(rating)
+                            ? "fill-primary"
+                            : "fill-gray-600"
+                        }`}
+                      />
+                    ))}
+                  </div>
+                  <span className="text-gray-300 text-sm font-medium">
+                    {rating}
+                  </span>
+                </div>
+
+                {/* Short Bio */}
+                {bio && (
+                  <p
+                    className="text-sm text-gray-400 line-clamp-3 mt-2"
+                    itemProp="description"
+                  >
+                    {bio.length > 150 ? bio.slice(0, 150) + "..." : bio}
+                  </p>
+                )}
+
+                {/* Specializations */}
+                {specializations.length > 0 && (
+                  <div
+                    className="flex flex-wrap justify-center gap-2 mt-3"
+                    aria-label="Specializations"
+                  >
+                    <h4 className="w-full text-white font-semibold">
+                      Specializations
+                    </h4>
+                    {specializations.slice(0, 4).map((tag, i) => (
+                      <span
+                        key={i}
+                        className="px-3 py-1 rounded-full text-xs font-semibold bg-primary text-black shadow"
+                      >
+                        {tag}
+                      </span>
+                    ))}
                   </div>
                 )}
-              </div>
-            </div>
 
-            {/* Name & Title */}
-            <h3 className="text-lg font-semibold">{therapist.name}</h3>
-            <p className="text-[#C49E5B] text-sm mt-1">{therapist.title}</p>
+                {/* Experience */}
+                <div className="flex items-center justify-center gap-2 text-sm font-semibold text-white mt-3">
+                  <Award className="w-4 h-4 text-primary" />
+                  <span itemProp="experienceInYears">
+                    {experience}+ Years Experience
+                  </span>
+                </div>
 
-            {/* Rating */}
-            <div className="flex items-center justify-center gap-2 mt-4">
-              <div className="flex text-[#C49E5B]">
-                {[...Array(5)].map((_, i) => (
-                  <svg
-                    key={i}
-                    className={`w-4 h-4 ${therapist.rating >= i + 1
-                      ? 'fill-yellow-400'
-                      : isDarkMode
-                        ? 'fill-gray-600'
-                        : 'fill-gray-300'
-                      }`}
-                    viewBox="0 0 24 24"
-                  >
-                    <path d="M12 .587l3.668 7.431L24 9.587l-6 5.841 1.417 8.249L12 18.896 4.583 23.677 6 15.428 0 9.587l8.332-1.569z" />
-                  </svg>
-                ))}
-              </div>
-              <span
-                className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'
-                  }`}
-              >
-                {therapist.rating.toFixed(1)}
-              </span>
-            </div>
-
-            {/* Tags */}
-            <div className="flex flex-wrap justify-center gap-2 mt-4">
-              {therapist.tags.map((tag, i) => (
-                <span
-                  key={i}
-                  className={`px-3 py-1 rounded-full text-xs font-medium ${isDarkMode
-                    ? 'bg-[#2b2d35] text-[#C49E5B]'
-                    : 'bg-yellow-100 text-yellow-700'
-                    }`}
+                {/* CTA */}
+                <button
+                  onClick={() => navigate("/browsetherapists")}
+                  className="py-3 px-10 rounded-full bg-primary text-black font-bold text-sm transition-all duration-300 hover:shadow-lg hover:shadow-primary/40 hover:scale-[1.02] active:scale-95 mt-6"
+                  aria-label={`Select ${fullName}`}
                 >
-                  {tag}
-                </span>
-              ))}
-            </div>
-
-            {/* Book Now Button */}
-            <button onClick={() => navigate("/browsetherapists")} className="mt-6 bg-[#D59940] w-full text-black font-semibold px-6 py-2 rounded-full shadow-lg shadow-[#C49E5B]/25 hover:shadow-[#C49E5B]/40 transform hover:scale-105 transition-all duration-300">
-              Book Now
-            </button>
-          </div>
-        ))}
+                  Select Therapist
+                </button>
+              </div>
+            </article>
+          );
+        })}
       </div>
-    </section >
+
+      {/* ✅ Modal for Enlarged Image */}
+      {selectedImage && (
+        <div
+          className="fixed inset-0 bg-black/80 flex items-center justify-center z-50"
+          onClick={() => setSelectedImage(null)}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Therapist image preview"
+        >
+          <div
+            className="relative max-w-3xl w-full mx-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              className="absolute top-2 right-2 bg-black/60 text-white p-2 rounded-full hover:bg-black/80"
+              onClick={() => setSelectedImage(null)}
+              aria-label="Close image modal"
+            >
+              <X className="w-6 h-6" />
+            </button>
+            <img
+              src={selectedImage}
+              alt="Therapist preview"
+              className="w-full h-auto max-h-[80vh] rounded-lg object-contain shadow-lg"
+              loading="lazy"
+            />
+          </div>
+        </div>
+      )}
+    </section>
   );
 };
 

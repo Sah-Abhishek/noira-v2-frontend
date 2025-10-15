@@ -1,6 +1,5 @@
-
 // src/components/AdminSidebar.jsx
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import logo from "/noira.png";
 import {
@@ -10,57 +9,51 @@ import {
   BookOpen,
   Megaphone,
   Settings,
+  UserStar,
+  UserPen,
+  MessageSquareHeart,
 } from "lucide-react";
+import ConfirmLogoutModal from "./ConfirmLogOutModal";
 
 const AdminSidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const firstname = localStorage.getItem("firstname");
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   const menuItems = [
-    {
-      name: "Dashboard",
-      icon: <Home className="w-5 h-5" />,
-      path: "/admin/admindashboard",
-    },
-    {
-      name: "User Management",
-      icon: <Users className="w-5 h-5" />,
-      path: "/admin/users",
-    },
-    {
-      name: "Content Manager",
-      icon: <FileText className="w-5 h-5" />,
-      path: "/admin/content",
-    },
-    {
-      name: "Bookings",
-      icon: <BookOpen className="w-5 h-5" />,
-      path: "/admin/bookings",
-    },
-    {
-      name: "Marketing",
-      icon: <Megaphone className="w-5 h-5" />,
-      path: "/admin/marketing",
-    },
-    {
-      name: "Settings",
-      icon: <Settings className="w-5 h-5" />,
-      path: "/admin/settings",
-    },
+    { name: "Dashboard", icon: <Home className="w-5 h-5" />, path: "/admin/admindashboard" },
+    { name: "User Management", icon: <Users className="w-5 h-5" />, path: "/admin/usermanagement" },
+    { name: "Therapist Management", icon: <UserStar className="w-5 h-5" />, path: "/admin/therapistmanagement" },
+    // { name: "Content Manager", icon: <FileText className="w-5 h-5" />, path: "/admin/content" },
+    { name: "Bookings", icon: <BookOpen className="w-5 h-5" />, path: "/admin/bookingsmanagement" },
+    // { name: "Marketing", icon: <Megaphone className="w-5 h-5" />, path: "/admin/marketing" },
+    { name: "Service Management", icon: <Megaphone className="w-5 h-5" />, path: "/admin/servicemanagement" },
+    { name: "Settlement Reports", icon: <Megaphone className="w-5 h-5" />, path: "/admin/settlementreports" },
+    { name: "Reviews", icon: <MessageSquareHeart className="w-5 h-5" />, path: "/admin/reviewsmanagement" },
+    { name: "Profile", icon: <UserPen className="w-5 h-5" />, path: "/admin/adminprofile" },
+
+    // { name: "Settings", icon: <Settings className="w-5 h-5" />, path: "/admin/settings" },
   ];
+
+  const handleLogout = () => {
+    const confirmLogout = window.confirm("Are you sure you want to log out?");
+    if (confirmLogout) {
+      localStorage.clear(); // clear all saved data
+      navigate("/adminlogin"); // redirect to login
+    }
+  };
 
   return (
     <>
       {/* Desktop Sidebar */}
       <div className="hidden lg:flex h-full w-64 bg-[#111111] text-white flex-col justify-between border-r border-gray-800">
-        {/* Logo */}
         <div>
+          {/* Logo */}
           <div className="flex items-center gap-2 px-6 py-6">
             <Link to="/">
               <img src={logo} alt="Noira Logo" className="w-auto h-8" />
             </Link>
-            {/* <span className="ml-2 text-lg font-bold text-gold">NOIRA</span> */}
           </div>
 
           {/* Menu */}
@@ -85,8 +78,8 @@ const AdminSidebar = () => {
           </nav>
         </div>
 
-        {/* Profile */}
-        <div className="px-6 py-4 flex items-center gap-4 border-t border-gray-800 ">
+        {/* Profile Section */}
+        <div className="px-6 py-4 flex items-center gap-4 border-t border-gray-800">
           {/* Profile Icon */}
           <div className="flex-shrink-0">
             <svg
@@ -109,12 +102,14 @@ const AdminSidebar = () => {
           <div className="flex flex-col text-white">
             <span className="text-sm font-semibold capitalize">
               {firstname
-                ? firstname.charAt(0).toUpperCase() +
-                firstname.slice(1).toLowerCase()
+                ? firstname.charAt(0).toUpperCase() + firstname.slice(1).toLowerCase()
                 : "Admin"}
             </span>
             <span className="text-xs text-gray-400">Administrator</span>
-            <button className="text-xs text-red-500 mt-1 hover:underline">
+            <button
+              onClick={() => setShowLogoutModal(true)}
+              className="text-xs text-red-500 mt-1 hover:underline"
+            >
               Logout
             </button>
           </div>
@@ -138,6 +133,14 @@ const AdminSidebar = () => {
           );
         })}
       </div>
+      <ConfirmLogoutModal
+        isOpen={showLogoutModal}
+        onClose={() => setShowLogoutModal(false)}
+        onConfirm={() => {
+          localStorage.clear();
+          navigate("/adminlogin");
+        }}
+      />
     </>
   );
 };

@@ -10,6 +10,7 @@ const CheckoutForm = () => {
   const [loading, setLoading] = useState(false);
   const apiUrl = import.meta.env.VITE_API_URL;
   const { cart } = useBookingStore();
+  const userjwt = localStorage.getItem("userjwt");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -20,6 +21,11 @@ const CheckoutForm = () => {
     // Call backend to create PaymentIntent
     const response = await axios.post(`${apiUrl}/create-checkout-session`, {
       cart // cents → $113.40
+    }, {
+      headers: {
+        Authorization: `Bearer ${userjwt}`,
+
+      }
     });
 
     const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {

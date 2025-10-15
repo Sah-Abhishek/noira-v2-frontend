@@ -1,6 +1,7 @@
 import React from "react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import CalendarDay from "./CalendarDay";
+import CalendarLegend from "./CalendarLegend";
 
 const monthNames = [
   "January", "February", "March", "April", "May", "June",
@@ -86,6 +87,7 @@ export default function CalendarComponent({
           )
         )}
       </div>
+      <CalendarLegend />
     </div>
   );
 }

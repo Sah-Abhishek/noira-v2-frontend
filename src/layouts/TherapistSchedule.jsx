@@ -15,6 +15,7 @@ export default function TherapistSchedule() {
   const [loading, setLoading] = useState(true);
   const [isResetModalOpen, setIsResetModalOpen] = useState(false);
 
+  const therapistjwt = localStorage.getItem('therapistjwt');
   const apiUrl = import.meta.env.VITE_API_URL;
   const therapistId = localStorage.getItem("therapistId");
   // console.log("This is the value of isModalOpen: ", isResetModalOpen);
@@ -25,7 +26,11 @@ export default function TherapistSchedule() {
       setLoading(true);
       const res = await axios.get(
         `${apiUrl}/therapist/availability/${therapistId}`
-      );
+        , {
+          headers: {
+            Authorization: `Bearer ${therapistjwt}`,
+          },
+        });
 
       // Transform API response into { "YYYY-MM-DD": [ { start, end } ] }
       const formattedData = {};
@@ -62,6 +67,10 @@ export default function TherapistSchedule() {
         therapistId,
         month,
         year,
+      }, {
+        headers: {
+          Authorization: `Bearer ${therapistjwt}`,
+        },
       });
 
       if (response.status === 200) {

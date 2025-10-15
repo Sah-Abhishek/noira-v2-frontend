@@ -22,12 +22,13 @@ import * as Yup from "yup";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import toast from "react-hot-toast";
+import useUserStore from "../store/UserStore";
 
 // ✅ List of London & Greater London postal code prefixes
-const LONDON_POSTCODES = [
-  "E", "EC", "N", "NW", "SE", "SW", "W", "WC", // London core
-  "BR", "CR", "DA", "EN", "HA", "IG", "KT", "RM", "SM", "TW", "UB", "WD" // Greater London
-];
+// const LONDON_POSTCODES = [
+//   "E", "EC", "N", "NW", "SE", "SW", "W", "WC", // London core
+//   "BR", "CR", "DA", "EN", "HA", "IG", "KT", "RM", "SM", "TW", "UB", "WD" // Greater London
+// ];
 
 // Validation schema
 const schema = Yup.object().shape({
@@ -35,16 +36,16 @@ const schema = Yup.object().shape({
   lastName: Yup.string(),
   email: Yup.string().email("Invalid email format").required("Email is required"),
   phone: Yup.string()
-    .required("Phone number is required")
-    .matches(/^[0-9]{10,15}$/, "Phone number must be 10–15 digits"),
+    .required("Phone is required")
+    .matches(/^\d{6,10}$/, "Enter 6 to 10 digits (after +44)"),
   password: Yup.string().min(6, "Minimum 6 characters").required("Password is required"),
-  postalCode: Yup.string()
-    .required("Postal code is required")
-    .test("is-london", "We do not provide service in your area", (value) => {
-      if (!value) return false;
-      const code = value.trim().toUpperCase();
-      return LONDON_POSTCODES.some((prefix) => code.startsWith(prefix));
-    }),
+  // postalCode: Yup.string()
+  //   .required("Postal code is required")
+  //   .test("is-london", "We do not provide service in your area", (value) => {
+  //     if (!value) return false;
+  //     const code = value.trim().toUpperCase();
+  //     return LONDON_POSTCODES.some((prefix) => code.startsWith(prefix));
+  //   }),
 });
 
 export default function UserSignup() {
@@ -52,19 +53,24 @@ export default function UserSignup() {
   const [showPassword, setShowPassword] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const navigate = useNavigate();
+  const { setUser } = useUserStore();
 
   const apiUrl = import.meta.env.VITE_API_URL;
 
-  const login = useGoogleLogin({
+  const googleSignup = useGoogleLogin({
     onSuccess: async (credentialResponse) => {
       try {
         const res = await axios.post(`${apiUrl}/auth/google`, {
           token: credentialResponse.access_token,
         });
+        console.log("This is the response from the google: ", res);
+
+        setUser(res.data.user);
 
         toast.success("Signin successful");
         localStorage.setItem("userjwt", res.data.token);
         localStorage.setItem("userEmail", res.data.user.email);
+        localStorage.setItem("userId", res.data.user._id);
         navigate("/allservicespage");
       } catch (error) {
         console.error("Google login error:", error);
@@ -98,13 +104,18 @@ export default function UserSignup() {
     try {
       setIsLoading(true);
       const response = await axios.post(endpoint, transformedData);
+      if (response.status == 200) {
+
+      }
       if (response.status === 201) {
         localStorage.setItem("userEmail", data.email);
+
         navigate("/otpinput/register");
       }
     } catch (error) {
       if (error.response) {
         setErrorMsg(`Signup failed: ${error.response.data.message || error.response.statusText}`);
+        toast.error(error.response.message)
       } else if (error.request) {
         setErrorMsg("No response from server. Please try again later.");
       } else {
@@ -121,13 +132,16 @@ export default function UserSignup() {
         {/* Logo and Title */}
         <div className="flex flex-col items-center space-y-2">
           <div className="flex items-center h-10 mt-10">
-            <img src={noira} alt="Logo" className="h-10 sm:h-15 mb-10" />
+            <Link to="/">
+
+              <img src={noira} alt="Logo" className="h-10 sm:h-15 mb-10" />
+            </Link>
           </div>
           <p className="text-gray-400 text-medium font-medium">Wellness Platform</p>
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 caret-white">
           {/* First Name */}
           <div className="space-y-1">
             <label className="text-sm text-gray-300 flex items-center gap-2">
@@ -173,21 +187,26 @@ export default function UserSignup() {
             {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
           </div>
 
-          {/* Phone */}
           <div className="space-y-1">
             <label className="text-sm text-gray-300 flex items-center gap-2">
               <FaPhone className="text-primary" /> Phone Number
             </label>
-            <input
-              type="tel"
-              placeholder="Enter your phone number"
-              {...register("phone")}
-              className={`w-full px-4 py-3 rounded-md bg-[#2b2b2b] text-white placeholder-gray-500 outline-none focus:ring-2 ${errors.phone ? "ring-red-500" : "focus:ring-primary"
-                }`}
-            />
-            {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone.message}</p>}
+            <div className="flex items-center">
+              <span className="px-3 py-3 bg-[#2b2b2b] border-r border-gray-600 rounded-l-md text-gray-400">
+                +44
+              </span>
+              <input
+                type="tel"
+                placeholder="Enter your phone number"
+                {...register("phone")}
+                className={`w-full px-4 py-3 rounded-r-md bg-[#2b2b2b] text-white placeholder-gray-500 outline-none focus:ring-2 ${errors.phone ? "ring-red-500" : "focus:ring-primary"
+                  }`}
+              />
+            </div>
+            {errors.phone && (
+              <p className="text-red-500 text-sm mt-1">{errors.phone.message}</p>
+            )}
           </div>
-
           {/* Password */}
           <div className="space-y-1">
             <label className="text-sm text-gray-300 flex items-center gap-2">
@@ -212,21 +231,21 @@ export default function UserSignup() {
           </div>
 
           {/* Postal Code */}
-          <div className="space-y-1">
-            <label className="text-sm text-gray-300 flex items-center gap-2">
-              <FaMapMarkerAlt className="text-primary" /> Postal Code
-            </label>
-            <input
-              type="text"
-              placeholder="Enter your postal code"
-              {...register("postalCode")}
-              className={`w-full px-4 py-3 rounded-md bg-[#2b2b2b] text-white placeholder-gray-500 outline-none focus:ring-2 ${errors.postalCode ? "ring-red-500" : "focus:ring-primary"
-                }`}
-            />
-            {errors.postalCode && (
-              <p className="text-red-500 text-sm mt-1">{errors.postalCode.message}</p>
-            )}
-          </div>
+          {/* <div className="space-y-1"> */}
+          {/*   <label className="text-sm text-gray-300 flex items-center gap-2"> */}
+          {/*     <FaMapMarkerAlt className="text-primary" /> Postal Code */}
+          {/*   </label> */}
+          {/*   <input */}
+          {/*     type="text" */}
+          {/*     placeholder="Enter your postal code" */}
+          {/*     {...register("postalCode")} */}
+          {/*     className={`w-full px-4 py-3 rounded-md bg-[#2b2b2b] text-white placeholder-gray-500 outline-none focus:ring-2 ${errors.postalCode ? "ring-red-500" : "focus:ring-primary" */}
+          {/*       }`} */}
+          {/*   /> */}
+          {/*   {errors.postalCode && ( */}
+          {/*     <p className="text-red-500 text-sm mt-1">{errors.postalCode.message}</p> */}
+          {/*   )} */}
+          {/* </div> */}
 
           {/* Sign Up Button */}
           <button
@@ -256,26 +275,25 @@ export default function UserSignup() {
 
           {/* Social Buttons */}
           <div className="flex gap-4">
-            <button
-              onClick={() => login()}
+            <button onClick={() => googleSignup()}
               className="w-full bg-[#2b2b2b] hover:bg-[#3b3b3b] py-2 rounded-md flex items-center justify-center gap-2 border border-gray-600 text-white"
             >
               <FaGoogle /> Google
             </button>
-            <button className="w-full bg-[#2b2b2b] hover:bg-[#3b3b3b] py-2 rounded-md flex items-center justify-center gap-2 border border-gray-600">
-              <FaApple /> Apple
-            </button>
+            {/* <button className="w-full bg-[#2b2b2b] hover:bg-[#3b3b3b] py-2 rounded-md flex items-center justify-center gap-2 border border-gray-600"> */}
+            {/*   <FaApple /> Apple */}
+            {/* </button> */}
           </div>
 
           {/* Sign up */}
           <div className="text-center text-sm text-gray-400 mt-4">
-            Don’t have an account?{" "}
-            <Link to="/usersignup" className="text-primary hover:underline">
-              Sign Up
+            Already have an account?{" "}
+            <Link to="/userlogin" className="text-primary hover:underline">
+              Login
             </Link>
           </div>
         </form>
       </div>
-    </div>
+    </div >
   );
 }

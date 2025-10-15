@@ -18,19 +18,17 @@ const WelcomeBar = () => {
       </div>
 
       {/* Right - Icons */}
-      <div className="flex items-center gap-4">
-        {/* Star Rating */}
-        <div className="flex items-center gap-1 bg-[#1c1c1c] px-3 py-1 rounded-xl shadow">
-          <Star className="text-yellow-400 w-4 h-4" />
-          <span className="text-sm font-medium">4.9</span>
-        </div>
-
-        {/* Notification Bell */}
-        <div className="relative">
-          <Bell className="w-6 h-6 text-gray-300 cursor-pointer hover:text-white transition" />
-          <span className="absolute top-0 right-0 w-2.5 h-2.5 bg-red-500 rounded-full border border-black"></span>
-        </div>
-      </div>
+      {/* <div className="flex items-center gap-4"> */}
+      {/*   <div className="flex items-center gap-1 bg-[#1c1c1c] px-3 py-1 rounded-xl shadow"> */}
+      {/*     <Star className="text-yellow-400 w-4 h-4" /> */}
+      {/*     <span className="text-sm font-medium">4.9</span> */}
+      {/*   </div> */}
+      {/**/}
+      {/*   <div className="relative"> */}
+      {/*     <Bell className="w-6 h-6 text-gray-300 cursor-pointer hover:text-white transition" /> */}
+      {/*     <span className="absolute top-0 right-0 w-2.5 h-2.5 bg-red-500 rounded-full border border-black"></span> */}
+      {/*   </div> */}
+      {/* </div> */}
     </div>
   );
 };

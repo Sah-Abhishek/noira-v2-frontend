@@ -14,11 +14,9 @@ export default function OverviewPanel({
   const therapistId = localStorage.getItem("therapistId");
   const apiUrl = import.meta.env.VITE_API_URL;
 
-  const [loading, setLoading] = useState(false);
-
-  // 👇 for delete modal
   const [modalOpen, setModalOpen] = useState(false);
   const [slotToDelete, setSlotToDelete] = useState(null); // {dateKey, index}
+  const therapistjwt = localStorage.getItem("therapistjwt");
 
   const handleDeleteClick = (dateKey, index) => {
     setSlotToDelete({ dateKey, index });
@@ -36,16 +34,24 @@ export default function OverviewPanel({
     const slot = availabilityData[dateKey][index];
 
     try {
-      await axios.post(`${apiUrl}/therapist/blocks`, {
-        therapistId,
-        date: new Date(dateKey).toISOString(),
-        blocksToDelete: [
-          {
-            startTime: slot.start,
-            endTime: slot.end,
+      await axios.post(
+        `${apiUrl}/therapist/blocks`,
+        {
+          therapistId,
+          date: new Date(dateKey).toISOString(),
+          blocksToDelete: [
+            {
+              startTime: slot.start,
+              endTime: slot.end,
+            },
+          ],
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${therapistjwt}`,
           },
-        ],
-      });
+        }
+      );
 
       toast.success("Slot deleted successfully");
 
@@ -72,15 +78,32 @@ export default function OverviewPanel({
     }
   };
 
-  // Summary data
-  const totalSlots = Object.values(availabilityData).reduce(
-    (acc, slots) => acc + slots.length,
+  // 🗓️ filter out past dates
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const upcomingAvailability = Object.entries(availabilityData).filter(
+    ([dateKey]) => {
+      const [y, m, d] = dateKey.split("-");
+      const date = new Date(y, m - 1, d);
+      return date >= today; // ✅ only today and future
+    }
+  );
+
+  // 📊 Summary data (use only upcoming)
+  const totalSlots = upcomingAvailability.reduce(
+    (acc, [, slots]) => acc + slots.length,
     0
   );
 
-  const allDates = Object.keys(availabilityData).sort();
-  const earliestDate = allDates.length ? allDates[0] : null;
-  const latestDate = allDates.length ? allDates[allDates.length - 1] : null;
+  const allUpcomingDates = upcomingAvailability
+    .map(([dateKey]) => dateKey)
+    .sort();
+
+  const earliestDate = allUpcomingDates.length ? allUpcomingDates[0] : null;
+  const latestDate = allUpcomingDates.length
+    ? allUpcomingDates[allUpcomingDates.length - 1]
+    : null;
 
   return (
     <div className="glass-morphism bg-[#0d0d0d] border border-white/10 rounded-2xl p-6 h-fit">
@@ -131,12 +154,12 @@ export default function OverviewPanel({
 
       {/* Slots List */}
       <div className="space-y-2 max-h-96 overflow-y-auto">
-        {Object.keys(availabilityData).length === 0 ? (
+        {upcomingAvailability.length === 0 ? (
           <div className="text-gray-400 text-sm text-center py-8">
-            No availability set
+            No upcoming availability set
           </div>
         ) : (
-          Object.entries(availabilityData).map(([dateKey, slots]) => {
+          upcomingAvailability.map(([dateKey, slots]) => {
             const [y, m, d] = dateKey.split("-");
             const date = new Date(y, m - 1, d);
             const dayName = date.toLocaleDateString("en-US", {

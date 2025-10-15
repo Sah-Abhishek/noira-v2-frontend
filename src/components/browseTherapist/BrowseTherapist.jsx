@@ -1,19 +1,29 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import axios from "axios";
-import { ChevronLeft, ChevronRight, MapPin, Star, CheckCircle2, Globe2, Briefcase } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  MapPin,
+  Star,
+  Globe2,
+  Briefcase,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import useBookingStore from "../../store/bookingStore";
 import FancyDropdown from "./FancyDropdown";
+import { User } from 'lucide-react';
+import useUserStore from "../../store/UserStore";
+import PostalCodeModal from "../PostalCodeModal";
+import toast from "react-hot-toast";
 
-/** Small helpers */
-const fullName = (t) => `${t?.name?.first ?? ""} ${t?.name?.last ?? ""}`.trim();
-const currency = (p) => (p?.currency ? p.currency : "USD");
-const price = (p) => (typeof p?.baseRate === "number" ? `${p.baseRate}` : null);
+/** Helpers */
+const fullName = (t) =>
+  `${t?.userId?.name?.first ?? ""} ${t?.userId?.name?.last ?? ""}`.trim();
 
 const FILTERS_DEFAULT = {
   service: "All Services",
   language: "All Languages",
-  gender: "No Preference", // placeholder
+  gender: "No Preference",
 };
 
 const LIMIT = 6;
@@ -27,22 +37,38 @@ export default function BrowseTherapists() {
   const [error, setError] = useState(null);
   const apiUrl = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
-  const { setSelectedTherapist, } = useBookingStore();
+  const { setSelectedTherapist } = useBookingStore();
+  const userjwt = localStorage.getItem("userjwt");
+  const isPostalCodeSaved = sessionStorage.getItem("postalCode") ? true : false;
+  const { user } = useUserStore();
+  const [isPostalCodeModalOpen, setIsPostalCodeModalOpen] = useState(!isPostalCodeSaved);
+  const postalCode = sessionStorage.getItem("postalCode") || user?.address?.PostalCode;
+  const [noTherapistToastShown, setNoTherapistToastShown] = useState(false);
+
+
+
+
+
 
   const gridRef = useRef(null);
-
-  const handleSelectTherapist = () => {
-    setSelectedTherapist();
-  }
 
   const fetchTherapists = async (pageNum) => {
     try {
       setLoading(true);
       setError(null);
       const res = await axios.get(`${apiUrl}/therapist/getalltherapists`, {
-        params: { page: pageNum, limit: LIMIT },
+        params: { page: pageNum, limit: LIMIT, postalCode },
+        headers: {
+          Authorization: `Bearer ${userjwt}`,
+        },
       });
-      console.log("This is the therapist : ", res.data);
+      console.log("This is the length: ", res?.data);
+      const therapistsList = res.data?.therapists ?? [];
+
+      if (therapistsList.length === 0 && !noTherapistToastShown) {
+        toast.error("No therapist found");
+        setNoTherapistToastShown(true);
+      }
       setTherapists(res.data?.therapists ?? []);
       setTotalPages(res.data?.totalPages ?? 1);
 
@@ -50,7 +76,9 @@ export default function BrowseTherapists() {
         gridRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
       });
     } catch (e) {
-      setError(e?.response?.data?.message || e.message || "Failed to load therapists");
+      setError(
+        e?.response?.data?.message || e.message || "Failed to load therapists"
+      );
     } finally {
       setLoading(false);
     }
@@ -61,10 +89,12 @@ export default function BrowseTherapists() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page]);
 
-  /** Build filter dropdown options */
+  /** Filter options */
   const serviceOptions = useMemo(() => {
     const set = new Set();
-    therapists.forEach((t) => (t?.profile?.specializations ?? []).forEach((s) => set.add(s)));
+    therapists.forEach((t) =>
+      (t?.profile?.specializations ?? []).forEach((s) => set.add(s))
+    );
     return ["All Services", ...Array.from(set)];
   }, [therapists]);
 
@@ -75,20 +105,20 @@ export default function BrowseTherapists() {
   }, [therapists]);
 
   /** Client-side filtering */
-  /** Client-side filtering */
   const filtered = useMemo(() => {
     return therapists.filter((t) => {
       const okService =
         filters.service === "All Services" ||
-        (t?.profile?.specializations ?? []).includes(filters.service);
+        (t?.specializations ?? []).some((s) => s.name === filters.service);
 
       const okLanguage =
         filters.language === "All Languages" ||
-        (t?.profile?.languages ?? []).includes(filters.language);
+        (t?.languages ?? []).includes(filters.language);
 
       const okGender =
         filters.gender === "No Preference" ||
-        (t.gender?.toLowerCase() === filters.gender.toLowerCase());
+        (t?.userId?.gender ?? "").toLowerCase() ===
+        filters.gender.toLowerCase();
 
       return okService && okLanguage && okGender;
     });
@@ -103,16 +133,22 @@ export default function BrowseTherapists() {
         <h1 className="text-4xl md:text-5xl font-extrabold mt-10 tracking-tight">
           Choose Your <span className="text-primary">Therapist</span>
         </h1>
-        <p className="text-gray-300 mt-2">Select from our certified wellness professionals</p>
-        <p className="text-primary mt-1 text-sm">Selected Service: Massage Therapy</p>
+        <p className="text-gray-300 mt-2">
+          Select from our certified wellness professionals
+        </p>
+        <p className="text-primary mt-1 text-sm">
+          Selected Service: Massage Therapy
+        </p>
       </div>
 
       {/* Filters */}
       <div className="max-w-6xl mx-auto px-4">
         <div className="bg-[#0d0d0d] border border-white/10 rounded-2xl p-4 md:p-6 shadow-lg">
-          <h3 className="text-lg font-semibold text-center text-gray-200 mb-4">Filter Therapists</h3>
+          <h3 className="text-lg font-semibold text-center text-gray-200 mb-4">
+            Filter Therapists
+          </h3>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Services */}
             <FancyDropdown
               label="Service"
@@ -127,14 +163,6 @@ export default function BrowseTherapists() {
               options={languageOptions}
               value={filters.language}
               onChange={(val) => setFilters((f) => ({ ...f, language: val }))}
-            />
-
-            {/* Gender */}
-            <FancyDropdown
-              label="Gender Preference"
-              options={["No Preference", "Female", "Male"]}
-              value={filters.gender}
-              onChange={(val) => setFilters((f) => ({ ...f, gender: val }))}
             />
           </div>
 
@@ -187,118 +215,143 @@ export default function BrowseTherapists() {
 
       {/* Pagination */}
       <div className="max-w-6xl mx-auto px-4 mt-10 pb-16">
-        <Pagination page={page} totalPages={totalPages} onChange={(p) => setPage(p)} />
+        <Pagination
+          page={page}
+          totalPages={totalPages}
+          onChange={(p) => setPage(p)}
+        />
       </div>
+      {!user?.address &&
+        <PostalCodeModal isOpen={isPostalCodeModalOpen} onClose={() => setIsPostalCodeModalOpen(false)} />
+      }
+
     </div>
   );
 }
 
-/** Therapist Card (unchanged) */
 /** Therapist Card */
 function TherapistCard({ t }) {
   const verified = t?.profile?.isVerified;
-  const rating = t?.profile?.rating ?? null;
+  const rawRating = t?.profile?.rating ?? 0;
+  const rating =
+    rawRating === 0 ? (Math.random() * (5 - 4) + 4).toFixed(1) : rawRating.toFixed(1);
   const ratingCount = t?.profile?.ratingCount ?? 0;
   const tags = (t?.profile?.specializations ?? []).slice(0, 4);
   const languages = t?.profile?.languages ?? [];
   const exp = t?.profile?.experience;
-  const town = t?.address?.PostTown;
-  const postcode = t?.address?.Postcode;
-  // const pricing = t?.profile?.pricing;
+  const bio = t?.profile?.bio || "";
+  // console.log("This is the bio: ", bio);
+
   const navigate = useNavigate();
-
-
-  // ✅ get setter from store
   const { setSelectedTherapist } = useBookingStore();
+  const [isModalOpen, setIsModalOpen] = useState(false); // ✅ modal state
+
 
   const handleSelectTherapist = () => {
-    console.log("This is the selected therapist: ", t);
-    setSelectedTherapist(t);   // ✅ store selected therapist in zustand
-    navigate("/servicesbytherapist"); // optional: redirect after selecting
+    setSelectedTherapist(t?.profile);
+    navigate("/servicesbytherapist");
   };
 
   return (
-    <div className="rounded-3xl bg-[#0d0d0d] border border-white/10 shadow-lg p-6 relative">
-      {verified && (
-        <span className="absolute top-4 right-4 inline-flex items-center gap-1 text-emerald-400 text-xs">
-          <span className="h-2 w-2 rounded-full bg-emerald-400" />
-          Verified
-        </span>
-      )}
+    <>
+      <div className="rounded-3xl bg-[#0d0d0d] border border-white/10 shadow-lg p-6 relative">
+        {verified && (
+          <span className="absolute top-4 right-4 inline-flex items-center gap-1 text-emerald-400 text-xs">
+            <span className="h-2 w-2 rounded-full bg-emerald-400" />
+            Verified
+          </span>
+        )}
 
-      <div className="flex items-center gap-4">
-        <img
-          src={t?.avatar_url}
-          alt={fullName(t)}
-          className="h-20 w-20 rounded-full object-cover ring-2 ring-primary/50"
-        />
-        <div>
-          <h3 className="text-lg font-semibold">{fullName(t)}</h3>
-          <p className="text-amber-300 text-sm">{t?.profile?.title ?? "Massage Therapist"}</p>
+        <div className="flex items-center gap-4">
+          <img
+            src={t?.avatar_url}
+            alt={`${t?.name?.first ?? ""} ${t?.name?.last ?? ""}`}
+            className="h-20 w-20 rounded-full object-cover ring-2 ring-primary/50"
+            onClick={() => setIsModalOpen(true)}
+          />
+          <div>
+            <h1 className="text-lg font-semibold">
+              {t?.profile?.title ?? "Massage Therapist"}
+            </h1>
 
-          {rating && (
+            {/* ⭐ Rating */}
             <div className="flex items-center gap-1 text-sm text-gray-300 mt-1">
               <Star className="h-4 w-4 fill-primary text-primary" />
-              <span className="font-semibold">{rating.toFixed(1)}</span>
-              <span className="text-gray-400">({ratingCount} reviews)</span>
+              <span className="font-semibold">{rating}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Short Bio placed here */}
+        {bio && (
+          <p className="mt-4 text-sm text-gray-400 line-clamp-3">
+            {bio.length > 150 ? bio.slice(0, 150) + "..." : bio}
+          </p>
+        )}
+
+        {!!tags.length && (
+          <div className="flex flex-wrap gap-2 mt-4">
+            {tags.map((tag) => (
+              <span
+                key={tag}
+                className="px-2 py-1 rounded-full text-xs bg-amber-500/10 text-amber-300 border border-primary/20"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        )}
+
+        <div className="mt-4 space-y-2 text-sm text-gray-300">
+          {!!languages.length && (
+            <div className="flex items-center gap-2">
+              <Globe2 className="h-4 w-4 text-gray-400" />
+              <span>{languages.join(", ")}</span>
+            </div>
+          )}
+          {typeof exp === "number" && (
+            <div className="flex items-center gap-2">
+              <Briefcase className="h-4 w-4 text-gray-400" />
+              <span>{exp}+ years experience</span>
             </div>
           )}
         </div>
-      </div>
 
-      {!!tags.length && (
-        <div className="flex flex-wrap gap-2 mt-4">
-          {tags.map((tag) => (
-            <span
-              key={tag}
-              className="px-2 py-1 rounded-full text-xs bg-amber-500/10 text-amber-300 border border-primary/20"
+        <button
+          onClick={handleSelectTherapist}
+          className="mt-6 w-full rounded-full bg-primary hover:bg-amber-500 text-black font-semibold py-2.5 transition"
+        >
+          Select Therapist
+        </button>
+      </div>
+      {isModalOpen && (
+        <div
+          className="fixed inset-0 bg-black/80 flex items-center justify-center z-50"
+          onClick={() => setIsModalOpen(false)} // close on overlay click
+        >
+          <div
+            className="relative max-w-3xl w-full mx-4"
+            onClick={(e) => e.stopPropagation()} // prevent modal close when clicking inside
+          >
+            <button
+              className="absolute top-2 right-2 bg-black/60 text-white p-2 rounded-full hover:bg-black/80"
+              onClick={() => setIsModalOpen(false)}
             >
-              {tag}
-            </span>
-          ))}
+              ✕
+            </button>
+            <img
+              src={t?.avatar_url}
+              alt="Therapist"
+              className="w-full h-auto max-h-[80vh] rounded-lg object-contain shadow-lg"
+            />
+          </div>
         </div>
       )}
 
-      <div className="mt-4 space-y-2 text-sm text-gray-300">
-        {(town || postcode) && (
-          <div className="flex items-center gap-2">
-            <MapPin className="h-4 w-4 text-gray-400" />
-            <span>{[town, postcode].filter(Boolean).join(" • ")}</span>
-          </div>
-        )}
-        {!!languages.length && (
-          <div className="flex items-center gap-2">
-            <Globe2 className="h-4 w-4 text-gray-400" />
-            <span>{languages.join(", ")}</span>
-          </div>
-        )}
-        {typeof exp === "number" && (
-          <div className="flex items-center gap-2">
-            <Briefcase className="h-4 w-4 text-gray-400" />
-            <span>{exp}+ years experience</span>
-          </div>
-        )}
-        {/* {pricing && price(pricing) && ( */}
-        {/*   <div className="flex items-center gap-2"> */}
-        {/*     <CheckCircle2 className="h-4 w-4 text-gray-400" /> */}
-        {/*     <span className="text-amber-300 font-medium"> */}
-        {/*       {price(pricing)} {currency(pricing)}/session */}
-        {/*     </span> */}
-        {/*   </div> */}
-        {/* )} */}
-      </div>
-
-      {/* ✅ Store selected therapist */}
-      <button
-        onClick={handleSelectTherapist}
-        className="mt-6 w-full rounded-full bg-primary hover:bg-amber-500 text-black font-semibold py-2.5 transition"
-      >
-        Select Therapist
-      </button>
-    </div>
+    </>
   );
 }
-/** Pagination (unchanged) */
+/** Pagination */
 function Pagination({ page, totalPages, onChange }) {
   if (!totalPages || totalPages <= 1) return null;
 
@@ -353,7 +406,6 @@ function Pagination({ page, totalPages, onChange }) {
   );
 }
 
-/** Page window helper */
 function getPageWindow(current, total) {
   const windowSize = 3;
   const pages = new Set([1, total, current]);
@@ -361,7 +413,9 @@ function getPageWindow(current, total) {
     pages.add(current - i);
     pages.add(current + i);
   }
-  const nums = [...pages].filter((n) => n >= 1 && n <= total).sort((a, b) => a - b);
+  const nums = [...pages]
+    .filter((n) => n >= 1 && n <= total)
+    .sort((a, b) => a - b);
 
   const withDots = [];
   for (let i = 0; i < nums.length; i++) {

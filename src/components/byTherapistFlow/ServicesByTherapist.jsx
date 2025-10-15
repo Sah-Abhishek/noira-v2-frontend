@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import {
@@ -7,10 +6,11 @@ import {
   FaBriefcase,
   FaHeart,
   FaPlane,
+  FaArrowLeft,
 } from "react-icons/fa";
 import { FaClockRotateLeft } from "react-icons/fa6";
 import useBookingStore from "../../store/bookingStore.jsx";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import StickyCartSummary from "../ChooseTherapist/StickyCartSummary.jsx";
 
 export default function ServiceByTherapist() {
@@ -19,23 +19,20 @@ export default function ServiceByTherapist() {
   const [selectedOptions, setSelectedOptions] = useState({});
   const { cart, setCart, selectedTherapist } = useBookingStore();
   const navigate = useNavigate();
-  const location = useLocation();
-
-  const authToken = localStorage.getItem("userjwt");
   const apiUrl = import.meta.env.VITE_API_URL;
-  const therapistId = selectedTherapist.profile._id;
+  const therapistId = selectedTherapist._id;
+  const authToken = localStorage.getItem("userjwt");
+  console.log("This is the selected Option: ", selectedOptions);
+
   const fetchServices = async () => {
     try {
       const response = await axios.get(
         `${apiUrl}/therapist/${therapistId}/services`,
         {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-          },
+          headers: authToken ? { Authorization: `Bearer ${authToken}` } : {},
         }
       );
 
-      // ✅ handle both formats (array or { therapistId, services: [...] })
       if (Array.isArray(response.data)) {
         setServices(response.data);
       } else if (response.data.services) {
@@ -72,8 +69,7 @@ export default function ServiceByTherapist() {
   ];
 
   const handleSelect = (service, option, optionIndex) => {
-    console.log("This is the option: ", option.price.amount);
-    // only allow one service in cart
+    // ✅ allow saving to cart even if not logged in
     setSelectedOptions({ [service._id]: option });
     setCart({
       serviceId: service._id,
@@ -81,15 +77,13 @@ export default function ServiceByTherapist() {
       optionIndex,
       durationMinutes: option.durationMinutes,
       id: option._id,
-      price: option.price.amount, // ✅ flat number only
+      price: option.price.amount,
     });
   };
 
   const handleContinue = () => {
     if (!cart) return;
     navigate("/findtherapistbyavailability");
-    // 🚀 navigate to next step (Date & Time page)
-    console.log("Proceed with booking:", cart);
   };
 
   const ServiceSkeleton = () => (
@@ -100,7 +94,15 @@ export default function ServiceByTherapist() {
     <div className="bg-noira-black text-noira-ivory min-h-screen p-6 font-sans">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-16 mt-20">
+        <div className="flex flex-col items-center text-center mb-16 mt-20 relative">
+          <button
+            onClick={() => navigate(-1)}
+            className="flex items-center gap-2 border-primary border md:border-transparent hover:border-white rounded-full px-3 py-2 text-noira-gold hover:text-noira-gold-light transition
+               md:absolute md:left-0 md:top-0 mb-6 md:mb-0"
+          >
+            <FaArrowLeft /> Back
+          </button>
+
           <h1 className="font-serif text-5xl md:text-6xl font-bold mb-6 text-primary">
             Massage Menu
           </h1>
@@ -124,9 +126,7 @@ export default function ServiceByTherapist() {
               return (
                 <div
                   key={service._id}
-                  className={`service-card mb-30 rounded-3xl overflow-hidden gold-foil group cursor-pointer ${cart?.serviceId === service._id
-                    ? "ring-2 ring-noira-gold"
-                    : ""
+                  className={`service-card mb-30 rounded-3xl overflow-hidden gold-foil group cursor-pointer ${cart?.serviceId === service._id ? "ring-2 ring-noira-gold" : ""
                     }`}
                   style={{ backgroundImage: `url(${bg})` }}
                 >
@@ -142,7 +142,9 @@ export default function ServiceByTherapist() {
                         <span className="price-display bg-gradient-to-r from-noira-gold to-noira-gold-light text-noira-black px-3 py-1 rounded-full text-xs font-bold opacity-80">
                           {selectedOpt
                             ? `£${selectedOpt.price.amount}`
-                            : "£0"}
+                            : `From £${Math.min(
+                              ...service.options.map((o) => o.price.amount)
+                            )}`}
                         </span>
                       </div>
                     </div>
@@ -157,33 +159,27 @@ export default function ServiceByTherapist() {
                     {/* Options */}
                     <div className="mb-6">
                       <h4 className="text-noira-gold text-xs font-medium mb-3 uppercase tracking-wider">
-                        {authToken ? "Select Duration" : "Pricing"}
+                        Select Duration
                       </h4>
 
-                      {authToken ? (
-                        <div className="flex flex-wrap gap-2">
-                          {service.options.map((opt, index) => {
-                            const isActive = selectedOpt?._id === opt._id;
-                            return (
-                              <button
-                                key={opt._id}
-                                onClick={() => handleSelect(service, opt, index)} // ✅ pass index
-                                className={`duration-chip px-4 py-2 rounded-full text-xs text-noira-gold transition-all ${isActive ? "selected" : ""
-                                  }`}
-                              >
-                                {opt.durationMinutes} min • £{opt.price.amount}
-                              </button>
-                            );
-                          })}
-                        </div>
-                      ) : (
-                        <button
-                          onClick={() => navigate("/userlogin", { state: { from: location } })}
-                          className="px-4 py-2 rounded-full text-xs font-semibold bg-noira-gold text-black hover:opacity-90 transition"
-                        >
-                          Login to see prices
-                        </button>
-                      )}
+                      <div className="flex flex-wrap gap-2">
+                        {service.options.map((opt, index) => {
+                          const isActive = selectedOpt?._id === opt._id;
+                          return (
+                            <button
+                              key={opt._id}
+                              onClick={() => handleSelect(service, opt, index)}
+                              className={`duration-chip px-4 py-2 rounded-full text-xs font-medium transition-all
+    ${isActive
+                                  ? "bg-noira-gold text-black shadow-lg shadow-noira-gold/30 scale-110 ring-2 ring-noira-gold"
+                                  : "text-noira-gold border border-noira-gold hover:bg-noira-gold/10 hover:scale-105"
+                                }`}
+                            >
+                              {opt.durationMinutes} min • £{opt.price.amount}
+                            </button>
+                          );
+                        })}
+                      </div>
                     </div>
 
                     <div className="flex items-center justify-between pt-4 border-t border-noira-gold/20">
@@ -200,38 +196,11 @@ export default function ServiceByTherapist() {
               );
             })}
         </div>
-
-        {/* Sticky Cart Summary */}
-        {/*     {Object.keys(selectedOptions).length > 0 && ( */}
-        {/**/}
-        {/*       <div */}
-        {/*         className={`fixed bottom-0 left-0 w-full bg-black border-t border-primary/30 px-60 py-10 flex items-center justify-between z-50 */}
-        {/* transform transition-all duration-500 ease-in-out */}
-        {/* ${Object.keys(selectedOptions).length > 0 */}
-        {/*             ? "translate-y-0 opacity-100" */}
-        {/*             : "translate-y-full opacity-0 pointer-events-none" */}
-        {/*           }`} */}
-        {/*       > */}
-        {/*         <div className="text-sm text-noira-light pr-25"> */}
-        {/*           <span className="mr-2 text-xl text-primary font-bold">Selected:</span> */}
-        {/*           <span className="font-semibold"> */}
-        {/*             {cart ? cart.serviceName : "No service selected"} */}
-        {/*           </span> */}
-        {/*           <span className="mx-2 text-noira-gold">•</span> */}
-        {/*           <span className="font-semibold">£{cart?.price ?? 0}</span> */}
-        {/*         </div> */}
-        {/**/}
-        {/*         <button */}
-        {/*           className="bg-primary text-noira-dark font-semibold px-6 py-2 text-black rounded-full shadow-lg hover:opacity-90 transition" */}
-        {/*           onClick={handleContinue} */}
-        {/*           disabled={!cart} */}
-        {/*         > */}
-        {/*           Continue to Date & Time */}
-        {/*         </button> */}
-        {/*       </div> */}
-        {/*     )} */}
       </div>
-      <StickyCartSummary />
+
+      {Object.keys(selectedOptions).length > 0 && (
+        <StickyCartSummary isAbled={true} onContinue={handleContinue} />
+      )}
     </div>
   );
 }

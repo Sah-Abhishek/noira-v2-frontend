@@ -1,0 +1,25 @@
+
+User-agent: *
+# Allow only the homepage
+Allow: /
+allow: /blog
+
+# Disallow all other pages
+Disallow: /therapists
+Disallow: /booking
+Disallow: /profile
+Disallow: /dashboard
+Disallow: /services
+Disallow: /subscriptions
+Disallow: /membership
+Disallow: /gallery
+Disallow: /video
+Disallow: /how-it-works
+Disallow: /at-home-treatment
+Disallow: /featuredtherapists
+Disallow: /contact
+Disallow: /privacy
+Disallow: /terms
+
+# Point search engines to your sitemap (update domain)
+Sitemap: https://www.yourdomain.com/sitemap.xml
