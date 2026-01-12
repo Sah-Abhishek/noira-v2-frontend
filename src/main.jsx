@@ -17,7 +17,6 @@ createRoot(document.getElementById('root')).render(
   <GoogleOAuthProvider clientId={clientId}>
     <Elements stripe={stripePromise} >
       <App />
-
     </Elements>
   </GoogleOAuthProvider>
 
