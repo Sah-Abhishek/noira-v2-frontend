@@ -74,6 +74,7 @@ import RefundPolicy from "./informationPages/RefundPolicy.jsx";
 import HealthAndSafety from "./informationPages/HealthAndSafetyPolicy.jsx";
 import ResourcesPage from "./components/therapist/TherapistResources.jsx";
 import ReviewsPage from "./components/Admin/ReviewsManagement/ReviewsPage.jsx";
+import BlogWritePage from "./Blog/BlogwritePage.jsx";
 
 const AppRoutes = () => {
   return (
@@ -90,7 +91,7 @@ const AppRoutes = () => {
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<LandingPage />} />
-        <Route path="/careers" element={<CareerPage />} />
+        <Route path="/careers" element={<CareerPage />} />ww
         <Route path="/about" element={<AboutPage />} />
         <Route path="/adminlogin" element={<AdminLogin />} />
         <Route path="/otpinput/:purpose" element={<OtpInput />} />
@@ -110,7 +111,9 @@ const AppRoutes = () => {
         <Route path="/refundpolicy" element={<RefundPolicy />} />
         <Route path="/healthandsafetypolicy" element={<HealthAndSafety />} />
         <Route path="/accessibility" element={<HealthAndSafety />} />
-        <Route path="/blog/:id" element={<BlogPageArticle />} />
+         <Route path="/blog/blog-write" element={<BlogWritePage />} />
+        <Route path="/blog/:slug" element={<BlogPageArticle />} />
+       
         <Route path="*" element={<NotFoundPage />} />
         <Route
           path="/servicesbytherapist"
