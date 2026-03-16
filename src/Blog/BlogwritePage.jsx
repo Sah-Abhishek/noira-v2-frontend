@@ -158,58 +158,78 @@ export default function BlogWritePage() {
     }
   };
 
-  const PreviewModal = () => (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 overflow-y-auto">
-      <div className="min-h-screen px-4 py-8">
-        <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-xl">
-          <div className="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-center z-10">
-            <h2 className="text-2xl font-bold">Preview</h2>
-            <button
-              onClick={() => setIsPreview(false)}
-              className="p-2 hover:bg-gray-100 rounded-full"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
 
-          <div className="p-6">
-            {bannerImages.length > 0 && (
-              <div className="mb-6">
-                <img
-                  src={bannerImages[0].preview}
-                  alt="Banner"
-                  className="w-full h-96 object-cover rounded-lg"
-                />
-              </div>
-            )}
+ const PreviewModal = () => (
+  <div className="fixed inset-0 bg-black bg-opacity-50 z-50 overflow-y-auto">
+    <div className="min-h-screen px-4 py-8">
+      <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-xl">
+        <div className="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-center z-10">
+          <h2 className="text-2xl font-bold">Preview</h2>
+          <button
+            onClick={() => setIsPreview(false)}
+            className="p-2 hover:bg-gray-100 rounded-full"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
 
+        <div className="p-6">
+          {bannerImages.length > 0 && (
             <div className="mb-6">
-              <span className="inline-block px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm mb-4">
-                {formData.category}
-              </span>
-              <h1 className="text-4xl font-bold mb-4">{formData.title}</h1>
-              <div className="flex gap-4 text-gray-600 text-sm mb-4">
-                <span>{formData.author}</span>
-                <span>•</span>
-                <span>{formData.date}</span>
-                <span>•</span>
-                <span>{formData.reading_time}</span>
-              </div>
-              {formData.meta_description && (
-                <p className="text-gray-600 italic">{formData.meta_description}</p>
-              )}
+              <img
+                src={bannerImages[0].preview}
+                alt="Banner"
+                className="w-full h-96 object-cover rounded-lg"
+              />
             </div>
+          )}
 
-            <div
-              className="prose prose-lg max-w-none prose-headings:font-bold prose-h1:text-4xl prose-h2:text-3xl prose-h3:text-2xl prose-p:text-gray-700 prose-p:leading-relaxed prose-img:rounded-lg prose-a:text-blue-600 prose-li:text-gray-700"
-              dangerouslySetInnerHTML={{ __html: formData.htmlContent }}
-            />
+          <div className="mb-6">
+            <span className="inline-block px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm mb-4">
+              {formData.category}
+            </span>
+            <h1 className="text-4xl font-bold mb-4">{formData.title}</h1>
+            <div className="flex gap-4 text-gray-600 text-sm mb-4">
+              <span>{formData.author}</span>
+              <span>•</span>
+              <span>{formData.date}</span>
+              <span>•</span>
+              <span>{formData.reading_time}</span>
+            </div>
+            {formData.meta_description && (
+              <p className="text-gray-600 italic">{formData.meta_description}</p>
+            )}
           </div>
+
+          {/* Add custom styles for HTML content */}
+          <style>
+            {`
+              .blog-content h1 { font-size: 2.25rem; font-weight: 700; margin: 1.5rem 0 1rem; }
+              .blog-content h2 { font-size: 1.875rem; font-weight: 700; margin: 1.5rem 0 1rem; }
+              .blog-content h3 { font-size: 1.5rem; font-weight: 600; margin: 1.25rem 0 0.75rem; }
+              .blog-content h4 { font-size: 1.25rem; font-weight: 600; margin: 1rem 0 0.5rem; }
+              .blog-content p { margin: 1rem 0; line-height: 1.75; color: #374151; }
+              .blog-content a { color: #2563eb; text-decoration: underline; }
+              .blog-content a:hover { color: #1d4ed8; }
+              .blog-content ul, .blog-content ol { margin: 1rem 0; padding-left: 1.5rem; }
+              .blog-content ul { list-style-type: disc; }
+              .blog-content ol { list-style-type: decimal; }
+              .blog-content li { margin: 0.5rem 0; color: #374151; }
+              .blog-content blockquote { border-left: 4px solid #e5e7eb; padding-left: 1rem; margin: 1rem 0; font-style: italic; color: #6b7280; }
+              .blog-content code { background: #f3f4f6; padding: 0.2rem 0.4rem; border-radius: 0.25rem; font-family: monospace; font-size: 0.875rem; }
+              .blog-content img { max-width: 100%; border-radius: 0.5rem; margin: 1rem 0; }
+            `}
+          </style>
+          
+          <div
+            className="blog-content"
+            dangerouslySetInnerHTML={{ __html: formData.htmlContent }}
+          />
         </div>
       </div>
     </div>
-  );
-
+  </div>
+);
   return (
     <div className="min-h-screen bg-gray-50 pt-30 px-6 py-10 md:px-16">
       <div className="max-w-6xl mx-auto px-4 py-8">

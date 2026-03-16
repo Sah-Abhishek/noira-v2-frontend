@@ -75,7 +75,7 @@ import HealthAndSafety from "./informationPages/HealthAndSafetyPolicy.jsx";
 import ResourcesPage from "./components/therapist/TherapistResources.jsx";
 import ReviewsPage from "./components/Admin/ReviewsManagement/ReviewsPage.jsx";
 import BlogWritePage from "./Blog/BlogwritePage.jsx";
-
+import BlogManagement from "./Blog/BlogManagement.jsx";
 const AppRoutes = () => {
   return (
     <>
@@ -113,7 +113,7 @@ const AppRoutes = () => {
         <Route path="/accessibility" element={<HealthAndSafety />} />
          <Route path="/blog/blog-write" element={<BlogWritePage />} />
         <Route path="/blog/:slug" element={<BlogPageArticle />} />
-       
+       <Route path="/blog/blog-edit" element={<BlogManagement />} />
         <Route path="*" element={<NotFoundPage />} />
         <Route
           path="/servicesbytherapist"
