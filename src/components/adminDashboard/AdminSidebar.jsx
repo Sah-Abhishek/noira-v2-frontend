@@ -12,6 +12,8 @@ import {
   UserStar,
   UserPen,
   MessageSquareHeart,
+  Ticket,
+  Image,
 } from "lucide-react";
 import ConfirmLogoutModal from "./ConfirmLogOutModal";
 
@@ -31,6 +33,8 @@ const AdminSidebar = () => {
     { name: "Service Management", icon: <Megaphone className="w-5 h-5" />, path: "/admin/servicemanagement" },
     { name: "Settlement Reports", icon: <Megaphone className="w-5 h-5" />, path: "/admin/settlementreports" },
     { name: "Reviews", icon: <MessageSquareHeart className="w-5 h-5" />, path: "/admin/reviewsmanagement" },
+    { name: "Coupons", icon: <Ticket className="w-5 h-5" />, path: "/admin/couponmanagement" },
+    { name: "Banners", icon: <Image className="w-5 h-5" />, path: "/admin/bannermanagement" },
     { name: "Profile", icon: <UserPen className="w-5 h-5" />, path: "/admin/adminprofile" },
 
     // { name: "Settings", icon: <Settings className="w-5 h-5" />, path: "/admin/settings" },

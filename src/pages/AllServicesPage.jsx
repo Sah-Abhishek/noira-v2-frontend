@@ -14,6 +14,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import StickyCartSummary from "../components/ChooseTherapist/StickyCartSummary";
 import PostalCodeModal from "../components/PostalCodeModal";
 import useUserStore from "../store/UserStore";
+import PageBanner from "../components/PageBanner";
 
 export default function AllServicesPage() {
   const [services, setServices] = useState([]);
@@ -95,6 +96,7 @@ export default function AllServicesPage() {
 
   return (
     <div className="bg-noira-black text-noira-ivory min-h-screen p-6 font-sans">
+      <PageBanner page="all-services" position="top" />
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-16 mt-20">

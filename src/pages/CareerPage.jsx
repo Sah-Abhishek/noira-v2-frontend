@@ -7,12 +7,14 @@ import CareerHighlights from "../components/Careerhiglights";
 import ApplyForm from "../components/ApplyForm";
 import { useTheme } from "../context/ThemeContext"; // Make sure path is correct
 import Footer from "../components/FooterSection";
+import PageBanner from "../components/PageBanner";
 
 const CareerPage = () => {
   const { isDarkMode } = useTheme();
 
   return (
     <>
+      <PageBanner page="careers" position="top" />
       <section
         className={`relative w-full transition-colors duration-300 ${isDarkMode ? "bg-black text-white" : "bg-white text-black"
           }`}

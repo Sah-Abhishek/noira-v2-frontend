@@ -4,6 +4,7 @@ import FooterSection from '../components/FooterSection';
 import { useTheme } from '../context/ThemeContext'; // Ensure correct path
 import Footer from '../components/FooterSection.jsx'
 import { Helmet } from 'react-helmet';
+import PageBanner from '../components/PageBanner';
 
 
 const AboutPage = () => {
@@ -39,6 +40,7 @@ const AboutPage = () => {
         <meta name="twitter:image" content="https://yourdomain.com/twitter-image.jpg" />
       </Helmet>
 
+      <PageBanner page="about" position="top" />
       <section
         id="about"
         className={`pt-16 px-4 text-center transition-colors duration-300 

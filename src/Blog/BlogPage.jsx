@@ -3,6 +3,7 @@ import axios from "axios";
 import { Search, Calendar, Clock, User, Eye } from "lucide-react";
 import { Link } from "react-router-dom";
 import Footer from "../components/FooterSection";
+import PageBanner from "../components/PageBanner";
 import { Helmet } from "react-helmet-async";
 
 export default function BlogPage() {
@@ -79,6 +80,7 @@ export default function BlogPage() {
         </script>
       </Helmet>
 
+      <PageBanner page="blog" position="top" />
       <div className="min-h-screen pt-30 bg-black text-white px-6 py-10 md:px-16">
         {/* Breadcrumb */}
         <nav className="text-sm text-gray-400 mb-4" aria-label="Breadcrumb">

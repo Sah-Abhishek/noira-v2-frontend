@@ -14,6 +14,7 @@ import MembershipSection from "../components/MembershipSection.jsx";
 import AtHomeTreatment from "../components/AtHomeTreatment.jsx";
 import SubscriptionsSection from "../components/SubscriptionSection.jsx";
 import MonthlySubscription from "../components/MonthlySubscription.jsx";
+import PageBanner from "../components/PageBanner.jsx";
 
 const LandingPage = () => {
   return (
@@ -47,6 +48,9 @@ const LandingPage = () => {
         />
       </Helmet>
 
+      {/* Event / Promotional Banners - Top */}
+      <PageBanner page="home" position="top" />
+
       {/* ✅ Your existing landing page sections */}
       <HeroSection />
       <WhyChooseNoira />
@@ -58,7 +62,11 @@ const LandingPage = () => {
       <MonthlySubscription />
       <LandingVideoSection />
       <Featuredtherapists />
+      {/* Event / Promotional Banners - Middle */}
+      <PageBanner page="home" position="middle" />
       <AtHomeTreatment />
+      {/* Event / Promotional Banners - Bottom */}
+      <PageBanner page="home" position="bottom" />
       <CtaSection />
       <Footer />
     </div>

@@ -15,6 +15,7 @@ import { User } from 'lucide-react';
 import useUserStore from "../../store/UserStore";
 import PostalCodeModal from "../PostalCodeModal";
 import toast from "react-hot-toast";
+import PageBanner from "../PageBanner";
 
 /** Helpers */
 const fullName = (t) =>
@@ -128,6 +129,7 @@ export default function BrowseTherapists() {
 
   return (
     <div className="min-h-screen bg-black text-white">
+      <PageBanner page="browse-therapists" position="top" />
       {/* Header */}
       <div className="max-w-6xl mx-auto px-4 pt-16 pb-6 text-center">
         <h1 className="text-4xl md:text-5xl font-extrabold mt-10 tracking-tight">

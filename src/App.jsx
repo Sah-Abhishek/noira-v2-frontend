@@ -53,13 +53,17 @@ function AppLayout() {
     '/admin/reviewsmanagement',
   ];
 
-  const shouldHideNavbar = hideNavbarPaths.some((path) => {
-    if (path.includes(':id')) {
-      const regex = new RegExp(path.replace(':id', '[^/]+') + '$');
-      return regex.test(location.pathname);
-    }
-    return location.pathname === path;
-  });
+  const shouldHideNavbar =
+    location.pathname.startsWith('/admin/') ||
+    location.pathname.startsWith('/user/') ||
+    location.pathname.startsWith('/therapist/') ||
+    hideNavbarPaths.some((path) => {
+      if (path.includes(':id') || path.includes(':token')) {
+        const regex = new RegExp(path.replace(/:[\w]+/g, '[^/]+') + '$');
+        return regex.test(location.pathname);
+      }
+      return location.pathname === path;
+    });
 
   return (
     <>

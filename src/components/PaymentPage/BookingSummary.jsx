@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Star } from "lucide-react";
+import axios from "axios";
 import useBookingStore from "../../store/bookingStore";
 
 const BookingSummary = ({ setCouponCode }) => {
@@ -10,8 +11,13 @@ const BookingSummary = ({ setCouponCode }) => {
 
   const [coupon, setCoupon] = useState("");
   const [discountPercent, setDiscountPercent] = useState(0);
+  const [discountFixed, setDiscountFixed] = useState(0);
+  const [discountType, setDiscountType] = useState(null); // "percentage" | "fixed" | "free"
   const [appliedCoupon, setAppliedCoupon] = useState(null);
   const [error, setError] = useState("");
+  const [validating, setValidating] = useState(false);
+
+  const apiUrl = import.meta.env.VITE_API_URL;
 
   if (!selectedTherapist) {
     return (
@@ -54,38 +60,67 @@ const BookingSummary = ({ setCouponCode }) => {
   }
 
 
-  // useEffect(() => {
-  //   // Apply RELAX10 coupon by default
-  //   setCoupon("RELAX10");
-  //   setDiscountPercent(10);
-  //   setAppliedCoupon("RELAX10");
-  //   setCouponCode("RELAX10");
-  // }, [setCouponCode]);
-
-  // ✅ Coupon Logic
-  const handleApplyCoupon = () => {
+  // ✅ Coupon Logic — validates against backend
+  const handleApplyCoupon = async () => {
     const code = coupon.trim().toUpperCase();
+    if (!code) {
+      setError("Please enter a coupon code");
+      return;
+    }
 
-    if (code === "RELAX10") {
-      setDiscountPercent(10);
-      setAppliedCoupon("RELAX10");
-      setCouponCode("RELAX10");
-      setError("");
-    } else if (code === "RELAX100") {
-      setDiscountPercent(100); // ✅ full discount
-      setAppliedCoupon("RELAX100");
-      setCouponCode("RELAX100");
-      setError("");
-    } else {
+    setValidating(true);
+    setError("");
+    try {
+      const res = await axios.post(`${apiUrl}/coupon/validate`, {
+        code,
+        amount: serviceFee + eliteHoursFee,
+      });
+
+      const { type, value, discount } = res.data.coupon;
+      setDiscountType(type);
+      setAppliedCoupon(code);
+      setCouponCode(code);
+
+      if (type === "percentage") {
+        setDiscountPercent(value);
+        setDiscountFixed(0);
+      } else if (type === "fixed") {
+        setDiscountPercent(0);
+        setDiscountFixed(value);
+      } else if (type === "free") {
+        setDiscountPercent(100);
+        setDiscountFixed(0);
+      }
+    } catch (err) {
       setDiscountPercent(0);
+      setDiscountFixed(0);
+      setDiscountType(null);
       setAppliedCoupon(null);
       setCouponCode(null);
-      setError("Invalid coupon code");
+      setError(err.response?.data?.message || "Invalid coupon code");
+    } finally {
+      setValidating(false);
     }
   };
+
+  const handleRemoveCoupon = () => {
+    setCoupon("");
+    setDiscountPercent(0);
+    setDiscountFixed(0);
+    setDiscountType(null);
+    setAppliedCoupon(null);
+    setCouponCode(null);
+    setError("");
+  };
+
   const subtotal = serviceFee + eliteHoursFee;
-  const discountAmount = (subtotal * discountPercent) / 100;
-  const total = subtotal - discountAmount;
+  let discountAmount = 0;
+  if (discountType === "percentage" || discountType === "free") {
+    discountAmount = (subtotal * discountPercent) / 100;
+  } else if (discountType === "fixed") {
+    discountAmount = Math.min(discountFixed, subtotal);
+  }
+  const total = Math.max(subtotal - discountAmount, 0);
 
   return (
     <div className="bg-[#0d0d0d] rounded-2xl p-6 border border-white/10 shadow-lg w-full space-y-6">
@@ -178,30 +213,40 @@ const BookingSummary = ({ setCouponCode }) => {
       {/* Coupon Section */}
       <div className="bg-[#111] rounded-2xl p-4 space-y-3">
         <h3 className="text-primary font-semibold text-sm">Add Coupon</h3>
-        <div className="flex flex-col sm:flex-row gap-2">
-          <input
-            type="text"
-            value={coupon}
-            onChange={(e) => {
-              setCoupon(e.target.value);
-              setCouponCode(e.target.value.trim().toUpperCase()); // ✅ always sync
-            }}
-            placeholder="Enter coupon code"
-            className="flex-1 px-3 py-2 rounded-lg bg-black border border-white/20 text-white text-sm focus:outline-none focus:border-primary"
-          />
-          <button
-            onClick={handleApplyCoupon}
-            className="w-full sm:w-auto px-4 py-2 rounded-lg bg-primary text-black font-semibold text-sm hover:opacity-90"
-          >
-            Apply
-          </button>
-        </div>
-        {error && <p className="text-red-400 text-xs">{error}</p>}
-        {appliedCoupon && (
-          <p className="text-green-400 text-xs">
-            Coupon <strong>{appliedCoupon}</strong> applied! 🎉
-          </p>
+        {appliedCoupon ? (
+          <div className="flex items-center justify-between bg-green-500/10 border border-green-500/20 rounded-lg px-3 py-2">
+            <span className="text-green-400 text-sm">
+              <strong>{appliedCoupon}</strong> applied
+              {discountType === "percentage" && ` — ${discountPercent}% off`}
+              {discountType === "fixed" && ` — £${discountFixed} off`}
+              {discountType === "free" && " — Free!"}
+            </span>
+            <button
+              onClick={handleRemoveCoupon}
+              className="text-red-400 text-xs hover:underline"
+            >
+              Remove
+            </button>
+          </div>
+        ) : (
+          <div className="flex flex-col sm:flex-row gap-2">
+            <input
+              type="text"
+              value={coupon}
+              onChange={(e) => setCoupon(e.target.value)}
+              placeholder="Enter coupon code"
+              className="flex-1 px-3 py-2 rounded-lg bg-black border border-white/20 text-white text-sm focus:outline-none focus:border-primary uppercase"
+            />
+            <button
+              onClick={handleApplyCoupon}
+              disabled={validating}
+              className="w-full sm:w-auto px-4 py-2 rounded-lg bg-primary text-black font-semibold text-sm hover:opacity-90 disabled:opacity-50"
+            >
+              {validating ? "Checking..." : "Apply"}
+            </button>
+          </div>
         )}
+        {error && <p className="text-red-400 text-xs">{error}</p>}
       </div>
 
       {/* Pricing */}
@@ -216,10 +261,16 @@ const BookingSummary = ({ setCouponCode }) => {
             <span>₤{eliteHoursFee.toFixed(2)}</span>
           </div>
         )}
-        {discountPercent > 0 && (
+        {discountAmount > 0 && (
           <div className="flex justify-between text-sm text-green-400">
-            <span>Discount ({discountPercent}%):</span>
-            <span>-₤{discountAmount.toFixed(2)}</span>
+            <span>
+              Discount
+              {discountType === "percentage" && ` (${discountPercent}%)`}
+              {discountType === "fixed" && ` (£${discountFixed})`}
+              {discountType === "free" && " (Free)"}
+              :
+            </span>
+            <span>-£{discountAmount.toFixed(2)}</span>
           </div>
         )}
       </div>
