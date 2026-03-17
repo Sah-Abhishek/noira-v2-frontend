@@ -82,7 +82,7 @@ const Footer = () => {
           <h4 className="text-[#C49E5B] font-semibold mb-4 text-lg">Contact</h4>
           <ul className={`space-y-3 text-sm ${mutedText}`}>
             <li className="flex items-center gap-2">
-              <FaPhoneAlt className="text-[#C49E5B]" /> +44 7350 700055
+              <FaPhoneAlt className="text-[#C49E5B]" /> +44 7884 660894
             </li>
             <li className="flex items-center gap-2">
               <FaEnvelope className="text-[#C49E5B]" /> info@noira.co.uk

@@ -48,7 +48,7 @@ const HeroSection = () => {
 
         {/* ✅ Supporting tagline (now h2 for hierarchy) */}
         <h2 className="mt-6 text-xl sm:text-2xl md:text-3xl text-[#C49E5B] font-whisper font-semibold">
-          The #1 Elite Massage Brand Across Mayfair, Chelsea & Knightsbridge
+          The #1 Elite Massage Brand Across London and its surrounding boroughs
         </h2>
 
         {/* ✅ Subheading/descriptor (paragraph, not heading) */}
