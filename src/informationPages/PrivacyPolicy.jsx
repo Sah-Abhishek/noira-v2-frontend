@@ -50,7 +50,7 @@ const PrivacyPolicy = () => {
             </li>
             <li>
               <strong className="text-primary">Contact:</strong>{" "}
-              NOIRA Ltd, London, info@noira.co.uk, +44 7350 700055.
+              NOIRA Ltd, London, info@noira.co.uk, +44 7884 660894.
             </li>
           </ul>
         </section>
