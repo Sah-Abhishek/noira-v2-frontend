@@ -9,8 +9,10 @@ import {
   Ticket,
   Copy,
   Check,
+  BarChart3,
 } from "lucide-react";
 import { toast } from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 const emptyForm = {
   code: "",
@@ -24,6 +26,7 @@ const emptyForm = {
 };
 
 export default function CouponManagement() {
+  const navigate = useNavigate();
   const [coupons, setCoupons] = useState([]);
   const [filteredCoupons, setFilteredCoupons] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -261,13 +264,22 @@ export default function CouponManagement() {
             Create and manage discount coupon codes
           </p>
         </div>
-        <button
-          onClick={openCreateModal}
-          className="flex items-center gap-2 bg-primary text-black font-semibold px-4 py-2 rounded-lg hover:opacity-90 transition"
-        >
-          <Plus size={18} />
-          Create Coupon
-        </button>
+        <div className="flex gap-3">
+          <button
+            onClick={() => navigate("/admin/couponanalytics")}
+            className="flex items-center gap-2 border border-primary/40 text-primary font-semibold px-4 py-2 rounded-lg hover:bg-primary/10 transition"
+          >
+            <BarChart3 size={18} />
+            Analytics
+          </button>
+          <button
+            onClick={openCreateModal}
+            className="flex items-center gap-2 bg-primary text-black font-semibold px-4 py-2 rounded-lg hover:opacity-90 transition"
+          >
+            <Plus size={18} />
+            Create Coupon
+          </button>
+        </div>
       </div>
 
       {/* Search */}

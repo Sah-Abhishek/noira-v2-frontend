@@ -43,6 +43,9 @@ export default function PostalCodeModal({ isOpen, onClose }) {
 
   const onSubmit = (code) => {
     sessionStorage.setItem("postalCode", code);
+    // Log postcode search for analytics (fire-and-forget)
+    const apiUrl = import.meta.env.VITE_API_URL;
+    axios.post(`${apiUrl}/postcode-search`, { postcode: code }).catch(() => {});
   };
 
   const handleSubmit = (e) => {

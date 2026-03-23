@@ -75,7 +75,9 @@ import HealthAndSafety from "./informationPages/HealthAndSafetyPolicy.jsx";
 import ResourcesPage from "./components/therapist/TherapistResources.jsx";
 import ReviewsPage from "./components/Admin/ReviewsManagement/ReviewsPage.jsx";
 import CouponManagement from "./components/Admin/CouponManagement.jsx";
+import CouponAnalytics from "./components/Admin/CouponAnalytics.jsx";
 import BannerManagement from "./components/Admin/BannerManagement.jsx";
+import PostcodeAnalytics from "./components/Admin/PostcodeAnalytics.jsx";
 import BlogWritePage from "./Blog/BlogwritePage.jsx";
 import BlogManagement from "./Blog/BlogManagement.jsx";
 const AppRoutes = () => {
@@ -206,8 +208,9 @@ const AppRoutes = () => {
           <Route path="settlementreports" element={<SettlementReportsPage />} />
           <Route path="reviewsmanagement" element={<ReviewsPage />} />
           <Route path="couponmanagement" element={<CouponManagement />} />
+          <Route path="couponanalytics" element={<CouponAnalytics />} />
           <Route path="bannermanagement" element={<BannerManagement />} />
-
+          <Route path="postcodeanalytics" element={<PostcodeAnalytics />} />
 
         </Route>
 
