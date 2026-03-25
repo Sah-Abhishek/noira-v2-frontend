@@ -64,6 +64,11 @@ const BookingConfirmed = () => {
       });
 
       if (res.status === 200) {
+        fbq('track', 'Purchase', {
+          content_name: cart.serviceName,
+          value: cart.price,
+          currency: 'GBP',
+        });
         toast.success("Check Mail for login details");
         navigate("/user/mybookings");
       }

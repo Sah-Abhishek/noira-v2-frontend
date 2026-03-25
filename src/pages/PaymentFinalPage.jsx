@@ -78,6 +78,11 @@ const PaymentPage = () => {
         );
 
         if (res.data.url) {
+          fbq('track', 'InitiateCheckout', {
+            content_name: cart.serviceName,
+            value: cart.price,
+            currency: 'GBP',
+          });
           window.location.href = res.data.url;
         }
       } else {
@@ -129,6 +134,11 @@ const PaymentPage = () => {
         );
 
         if (res.status === 200) {
+          fbq('track', 'Purchase', {
+            content_name: cart.serviceName,
+            value: cart.price,
+            currency: 'GBP',
+          });
           navigate("/user/mybookings");
           setLoading(false);
         }

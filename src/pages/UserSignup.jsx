@@ -71,6 +71,7 @@ export default function UserSignup() {
         localStorage.setItem("userjwt", res.data.token);
         localStorage.setItem("userEmail", res.data.user.email);
         localStorage.setItem("userId", res.data.user._id);
+        fbq('track', 'CompleteRegistration');
         navigate("/allservicespage");
       } catch (error) {
         console.error("Google login error:", error);

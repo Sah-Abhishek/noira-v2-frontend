@@ -43,6 +43,7 @@ const OtpInput = () => {
         if (purpose === "login") {
           navigate(from, { replace: true });
         } else if (purpose === "register") {
+          fbq('track', 'CompleteRegistration');
           navigate("/user/userprofile");
         } else if (purpose === "password_reset") {
           navigate("/reset-password-success");

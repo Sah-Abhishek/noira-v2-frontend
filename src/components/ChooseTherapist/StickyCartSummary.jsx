@@ -53,10 +53,20 @@ export default function StickyCartSummary({ isAbled, setIsAbled }) {
     if (location.pathname === "/allservicespage") {
       navigate("/choosetherapist");
     } else if (location.pathname === "/choosetherapist") {
+      fbq('track', 'InitiateCheckout', {
+        content_name: cart.serviceName,
+        value: cart.price,
+        currency: 'GBP',
+      });
       navigate("/paymentpage", { state: { from: "/choosetherapist" } });
     } else if (location.pathname === "/servicesbytherapist") {
       navigate("/findtherapistbyavailability");
     } else if (location.pathname === "/findtherapistbyavailability") {
+      fbq('track', 'InitiateCheckout', {
+        content_name: cart.serviceName,
+        value: cart.price,
+        currency: 'GBP',
+      });
       navigate("/paymentpage", { state: { from: "/findtherapistbyavailability" } });
     }
   };

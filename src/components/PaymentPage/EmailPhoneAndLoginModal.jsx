@@ -66,6 +66,11 @@ export default function AuthModal({
       setCouponCode(couponCode);
       setUserName(name);
 
+      fbq('track', 'InitiateCheckout', {
+        content_name: cart.serviceName,
+        value: cart.price,
+        currency: 'GBP',
+      });
       navigate("/bookingconfirmedbycash");
     } else if (method === "online") {
       const res = await axios.post(`${apiUrl}/payment/create-checkout-session`, {
@@ -83,6 +88,11 @@ export default function AuthModal({
       setIsGuestPaymentModalOpen(false);
 
       if (res.data.url) {
+        fbq('track', 'InitiateCheckout', {
+          content_name: cart.serviceName,
+          value: cart.price,
+          currency: 'GBP',
+        });
         window.location.href = res.data.url;
       }
     }

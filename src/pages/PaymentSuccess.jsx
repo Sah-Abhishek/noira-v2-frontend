@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { CheckCircle } from "lucide-react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -26,6 +26,10 @@ const PaymentSuccess = () => {
 
   const [loading, setLoading] = useState(false);
   const apiUrl = import.meta.env.VITE_API_URL;
+
+  useEffect(() => {
+    fbq('track', 'Purchase', { currency: 'GBP' });
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

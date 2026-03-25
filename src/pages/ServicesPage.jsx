@@ -48,6 +48,12 @@ const ServicesPage = () => {
       duration: option.durationMinutes,
       price: option.price.amount,
     });
+    fbq('track', 'AddToCart', {
+      content_name: service.name,
+      content_type: 'product',
+      value: option.price.amount,
+      currency: 'GBP',
+    });
   };
 
   const removeFromCart = () => {
