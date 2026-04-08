@@ -107,6 +107,7 @@ const AppRoutes = () => {
         <Route path="/auth/forgotpassword" element={<ForgotPassword />} />
         <Route path="/auth/resetpassword/:token" element={<ResetPasswordPage />} />
         <Route path="/blog" element={<BlogPage />} />
+        <Route path="/blog/:slug" element={<BlogPageArticle />} />
         <Route path="/privacypolicy" element={<PrivacyPolicy />} />
         <Route path="/termsandcondition" element={<TermsAndConditions />} />
         <Route path="/codeofethics" element={<CodeOfEthics />} />
@@ -115,9 +116,6 @@ const AppRoutes = () => {
         <Route path="/refundpolicy" element={<RefundPolicy />} />
         <Route path="/healthandsafetypolicy" element={<HealthAndSafety />} />
         <Route path="/accessibility" element={<HealthAndSafety />} />
-         <Route path="/blog/blog-write" element={<BlogWritePage />} />
-        <Route path="/blog/:slug" element={<BlogPageArticle />} />
-       <Route path="/blog/blog-edit" element={<BlogManagement />} />
         <Route path="*" element={<NotFoundPage />} />
         <Route
           path="/servicesbytherapist"
@@ -211,6 +209,9 @@ const AppRoutes = () => {
           <Route path="couponanalytics" element={<CouponAnalytics />} />
           <Route path="bannermanagement" element={<BannerManagement />} />
           <Route path="postcodeanalytics" element={<PostcodeAnalytics />} />
+          <Route path="contentmanagement" element={<BlogManagement />} />
+          <Route path="contentmanagement/write" element={<BlogWritePage />} />
+          <Route path="contentmanagement/edit/:id" element={<BlogWritePage />} />
 
         </Route>
 

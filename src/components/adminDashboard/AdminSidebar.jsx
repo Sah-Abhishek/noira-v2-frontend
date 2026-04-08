@@ -29,7 +29,7 @@ const AdminSidebar = () => {
     { name: "Dashboard", icon: <Home className="w-5 h-5" />, path: "/admin/admindashboard" },
     { name: "User Management", icon: <Users className="w-5 h-5" />, path: "/admin/usermanagement" },
     { name: "Therapist Management", icon: <UserStar className="w-5 h-5" />, path: "/admin/therapistmanagement" },
-    // { name: "Content Manager", icon: <FileText className="w-5 h-5" />, path: "/admin/content" },
+    { name: "Content Management", icon: <FileText className="w-5 h-5" />, path: "/admin/contentmanagement" },
     { name: "Bookings", icon: <BookOpen className="w-5 h-5" />, path: "/admin/bookingsmanagement" },
     // { name: "Marketing", icon: <Megaphone className="w-5 h-5" />, path: "/admin/marketing" },
     { name: "Service Management", icon: <Megaphone className="w-5 h-5" />, path: "/admin/servicemanagement" },
