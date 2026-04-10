@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Lock } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 export default function PostalCodeModal({ isOpen, onClose }) {
+  const navigate = useNavigate();
   const [postalCode, setPostalCode] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [loadingSuggestions, setLoadingSuggestions] = useState(false);
@@ -147,6 +149,14 @@ export default function PostalCodeModal({ isOpen, onClose }) {
                 className="w-full py-3 flex items-center justify-center gap-2 rounded-lg bg-primary text-black font-semibold hover:bg-primary/90 transition"
               >
                 CONTINUE →
+              </button>
+
+              <button
+                type="button"
+                onClick={() => navigate("/")}
+                className="w-full py-3 rounded-lg border border-gray-700 text-gray-300 font-semibold hover:bg-gray-800 transition"
+              >
+                ← Back to Home
               </button>
             </form>
 

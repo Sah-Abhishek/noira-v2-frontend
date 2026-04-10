@@ -3,7 +3,7 @@ import noira from '/noira.svg';
 import {
   FaInstagram,
   FaFacebookF,
-  FaTwitter,
+  FaLinkedinIn,
   FaPhoneAlt,
   FaEnvelope,
   FaClock,
@@ -49,13 +49,13 @@ const Footer = () => {
               <FaFacebookF />
             </a>
             <a
-              href="https://www.linkedin.com/in/noira-a62aa8378/"
+              href="https://www.linkedin.com/company/noira_london/"
               aria-label="LinkedIn"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:opacity-80 transition"
             >
-              <FaTwitter />
+              <FaLinkedinIn />
             </a>
           </div>
         </div>

@@ -43,7 +43,7 @@ const HeroSection = () => {
       >
         {/* ✅ Main SEO Headline */}
         <h1 className="text-3xl font-braven sm:text-5xl md:text-4xl font-bold text-[#C49E5B] max-w-3xl leading-tight">
-          Luxury Massage in London — Discreet Mobile Spa Experience
+          Luxury Massage in London<br />Discreet Mobile Spa Experience
         </h1>
 
         {/* ✅ Supporting tagline (now h2 for hierarchy) */}

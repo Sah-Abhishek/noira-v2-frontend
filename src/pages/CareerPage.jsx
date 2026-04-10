@@ -45,7 +45,7 @@ const CareerPage = () => {
                 {/* Tag 1 */}
                 <div className="flex items-center gap-2 bg-white/10 backdrop-blur-md px-3 py-2 rounded text-xs sm:text-sm md:text-base text-white w-full sm:w-auto justify-center sm:justify-start">
                   <img src={euro} alt="Euro" className="w-3 h-5" />
-                  <span>£120–£200/day</span>
+                  <span>£150–£350/day</span>
                 </div>
 
                 {/* Tag 2 */}

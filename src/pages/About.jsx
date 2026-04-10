@@ -43,7 +43,7 @@ const AboutPage = () => {
       <PageBanner page="about" position="top" />
       <section
         id="about"
-        className={`pt-16 px-4 text-center transition-colors duration-300 
+        className={`pt-24 px-4 text-center transition-colors duration-300
         ${isDarkMode ? 'bg-black text-white' : 'bg-white text-black'}`}
       >
         {/* Title */}
