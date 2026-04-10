@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { X } from "lucide-react";
 import photo1 from "/newimage3.jpeg";
 import photo3 from "/newimage2.jpeg";
-import photo2 from "/newimage1.jpeg";
+import photo2 from "/noira-oil-bottle.jpeg";
 import photo4 from "/newimage67.jpeg";
 import photo5 from "/newimage68.jpeg";
 
