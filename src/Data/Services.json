@@ -1,0 +1,158 @@
+[
+  {
+    "name": "Quick Reset",
+    "tier": "normal",
+    "description": "An express escape for busy schedules—back, neck & shoulder focus to melt tension fast.",
+    "options": [
+      {
+        "durationMinutes": 45,
+        "price": {
+          "amount": 65
+        }
+      }
+    ],
+    "features": []
+  },
+  {
+    "name": "Deep Comfort Massage",
+    "tier": "normal",
+    "description": "Slow, deep, and muscle-focused to release knots and restore balance.",
+    "options": [
+      {
+        "durationMinutes": 60,
+        "price": {
+          "amount": 85
+        }
+      },
+      {
+        "durationMinutes": 90,
+        "price": {
+          "amount": 120
+        }
+      },
+      {
+        "durationMinutes": 120,
+        "price": {
+          "amount": 155
+        }
+      },
+      {
+        "durationMinutes": 150,
+        "price": {
+          "amount": 190
+        }
+      }
+    ],
+    "features": []
+  },
+  {
+    "name": "Jet Lag Reset",
+    "tier": "normal",
+    "description": "Boosts circulation, reduces swelling, and leaves your body light and refreshed.",
+    "options": [
+      {
+        "durationMinutes": 60,
+        "price": {
+          "amount": 95
+        }
+      },
+      {
+        "durationMinutes": 90,
+        "price": {
+          "amount": 135
+        }
+      },
+      {
+        "durationMinutes": 120,
+        "price": {
+          "amount": 175
+        }
+      },
+      {
+        "durationMinutes": 150,
+        "price": {
+          "amount": 215
+        }
+      }
+    ],
+    "features": []
+  },
+  {
+    "name": "The Executive Reset",
+    "tier": "normal",
+    "description": "Deep tissue & pressure-point therapy for ultimate stress relief and mental clarity.",
+    "options": [
+      {
+        "durationMinutes": 60,
+        "price": {
+          "amount": 115
+        }
+      },
+      {
+        "durationMinutes": 90,
+        "price": {
+          "amount": 155
+        }
+      },
+      {
+        "durationMinutes": 120,
+        "price": {
+          "amount": 195
+        }
+      }
+    ],
+    "features": []
+  },
+  {
+    "name": "Couple’s Bespoke Escape",
+    "tier": "premium",
+    "description": "Two therapists in perfect sync for an intimate, deeply relaxing home or hotel experience.",
+    "options": [
+      {
+        "durationMinutes": 60,
+        "price": {
+          "amount": 180
+        }
+      },
+      {
+        "durationMinutes": 90,
+        "price": {
+          "amount": 250
+        }
+      },
+      {
+        "durationMinutes": 120,
+        "price": {
+          "amount": 320
+        }
+      }
+    ],
+    "features": []
+  },
+  {
+    "name": "The Black Label Experience",
+    "tier": "premium",
+    "description": "Our ultimate signature ritual—full-body sensory indulgence with warm oil infusion and flowing, luxurious strokes.",
+    "options": [
+      {
+        "durationMinutes": 90,
+        "price": {
+          "amount": 200
+        }
+      },
+      {
+        "durationMinutes": 120,
+        "price": {
+          "amount": 270
+        }
+      },
+      {
+        "durationMinutes": 150,
+        "price": {
+          "amount": 340
+        }
+      }
+    ],
+    "features": []
+  }
+]

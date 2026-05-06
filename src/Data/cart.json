@@ -1,0 +1,27 @@
+
+[
+  {
+    "id": "1",
+    "title": "Deep Comfort Massage",
+    "duration": "60 minutes",
+    "description": "Slow, deep, and muscle-focused to release knots and restore balance.",
+    "price": 85,
+    "quantity": 1
+  },
+  {
+    "id": "2",
+    "title": "Goddess Glow Ritual",
+    "duration": "90 minutes",
+    "description": "Soft, flowing strokes with aromatic oils to calm the mind and leave the skin radiant.",
+    "price": 145,
+    "quantity": 1
+  },
+  {
+    "id": "3",
+    "title": "The Executive Reset",
+    "duration": "60 minutes",
+    "description": "Deep tissue & pressure-point therapy for ultimate stress relief and mental clarity.",
+    "price": 115,
+    "quantity": 1
+  }
+]

@@ -1,0 +1,201 @@
+@import "tailwindcss";
+html, body {
+   margin: 0;
+   padding: 0;
+   box-sizing: border-box;
+   overflow-x: hidden;
+   max-width: 100vw;
+}
+/* index.css */
+/* global.css or in <style> tag */
+body.light {
+  background-color: white;
+  color: black;
+}
+
+body.dark {
+  background-color: #111;
+  color: white;
+}
+
+
+@font-face {
+  font-family: 'WhisperingSignature';
+  src: url('./assets/WhisperingSignature.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'BravenRegular';
+  src: url('./assets/BravenRegular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+
+.font-whisper {
+  font-family: 'WhisperingSignature', cursive;
+}
+.font-braven {
+  font-family: 'BravenRegular', sans-serif;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0px 1000px #2b2b2b inset !important;
+  -webkit-text-fill-color: white !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+
+@theme {
+  --color-primary: #C49E5B;
+}
+
+.primary-glow {
+  box-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
+}
+
+.custom-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scroll::-webkit-scrollbar-track {
+  background: #e5e7eb; /* gray-200 */
+}
+
+.custom-scroll::-webkit-scrollbar-thumb {
+  background-color: #60a5fa; /* blue-400 */
+  border-radius: 8px;
+}
+
+
+/* src/pages/services.css */
+
+/* 🌌 Background colors */
+.bg-noira-black {
+  background-color: #0a0a0a;
+}
+.text-noira-ivory {
+  color: #f8f6f2;
+}
+
+/* ✨ Gold tones */
+.text-noira-gold {
+  color: #d4af37;
+}
+.bg-noira-gold {
+  background-color: #d4af37;
+}
+.from-noira-gold {
+  --tw-gradient-from: #d4af37;
+}
+.to-noira-gold-light {
+  --tw-gradient-to: #f9e07f;
+}
+
+/* 🪞 Service Card */
+.service-card {
+  position: relative;
+  border-radius: 1.5rem;
+  overflow: hidden;
+  background-size: cover;
+  background-position: center;
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+.service-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 0 35px rgba(212, 175, 55, 0.5);
+}
+
+/* 🥂 Gold Foil Effect */
+.gold-foil {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* 🌫 Glass Panel */
+.glass-panel {
+  background: rgba(20, 20, 20, 0.7);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.3s ease-in-out;
+}
+.glass-panel:hover {
+  border-color: rgba(212, 175, 55, 0.3);
+}
+
+/* 💫 Specular Sweep */
+.specular-sweep {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    transparent,
+    rgba(255, 255, 255, 0.25),
+    transparent
+  );
+  transform: skewX(-20deg);
+  animation: sweep 6s infinite;
+}
+@keyframes sweep {
+  0% {
+    left: -100%;
+  }
+  50% {
+    left: 150%;
+  }
+  100% {
+    left: -100%;
+  }
+}
+
+/* 🎛 Duration Chip */
+.duration-chip {
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  background: rgba(255, 255, 255, 0.05);
+  color: #d4af37;
+  transition: all 0.3s ease;
+}
+.duration-chip:hover {
+  background: rgba(212, 175, 55, 0.2);
+  border-color: rgba(212, 175, 55, 0.7);
+}
+.duration-chip.selected {
+  background: linear-gradient(135deg, #d4af37, #f9e07f);
+  color: #0a0a0a;
+  font-weight: bold;
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.6);
+}
+
+/* 🏷 Price Badge */
+.price-display {
+  font-size: 0.75rem;
+  letter-spacing: 0.5px;
+  box-shadow: 0 0 8px rgba(212, 175, 55, 0.4);
+}
+
+/* 🎚 Selected Duration */
+.selected-duration {
+  font-size: 0.85rem;
+  opacity: 0.8;
+}
+
+/* 📡 Texture Grain */
+.texture-grain {
+  background-image: url("https://www.transparenttextures.com/patterns/noise.png");
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+}
+.primary-glow {
+  box-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
+}
+
+
