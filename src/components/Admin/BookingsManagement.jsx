@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Search, ChevronLeft, ChevronRight, X, Pencil, Eye } from "lucide-react";
+import { Search, ChevronLeft, ChevronRight, X, Pencil, Eye, Send } from "lucide-react";
+import toast from "react-hot-toast";
 import BookingsTableSkeleton from "./BookingsTableSkeleton";
 import CancelBookingModal from "./CancelBookingConfirmModal.jsx";
 import EditBookingModal from "./EditBookingModal.jsx";
@@ -27,6 +28,40 @@ export default function BookingsManagement() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+  const [resendingId, setResendingId] = useState(null);
+
+  const handleResendLink = async (booking) => {
+    if (resendingId) return;
+    try {
+      setResendingId(booking._id);
+      const channels = ["sms"];
+      if (booking.clientId?.email && !booking.clientId.email.endsWith("@noira.local")) {
+        channels.push("email");
+      }
+      const res = await axios.post(
+        `${apiUrl}/admin/booking/${booking._id}/resend-link`,
+        { channels },
+        { headers: { Authorization: `Bearer ${adminjwt}` } }
+      );
+      const sent = res.data?.delivery?.sent || [];
+      toast.success(
+        sent.length
+          ? `Link re-sent via ${sent.join(", ")}`
+          : "Link generated (no channel succeeded)"
+      );
+      if (res.data?.paymentLink) {
+        try {
+          await navigator.clipboard?.writeText(res.data.paymentLink);
+        } catch (_) {}
+      }
+    } catch (err) {
+      const msg =
+        err.response?.data?.message || err.message || "Resend failed";
+      toast.error(msg);
+    } finally {
+      setResendingId(null);
+    }
+  };
 
 
   useEffect(() => {
@@ -148,8 +183,18 @@ export default function BookingsManagement() {
                           />
                         )}
                         <div>
-                          <div>
-                            {b.clientId?.name?.first} {b.clientId?.name?.last}
+                          <div className="flex items-center gap-2">
+                            <span>
+                              {b.clientId?.name?.first} {b.clientId?.name?.last}
+                            </span>
+                            {b.source === "admin-manual" && (
+                              <span
+                                title="Created manually by admin (e.g. SMS booking)"
+                                className="px-1.5 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wide bg-primary/20 text-primary border border-primary/30"
+                              >
+                                Admin
+                              </span>
+                            )}
                           </div>
                           {b.clientId?.email && (
                             <div className="text-xs text-gray-400">
@@ -225,6 +270,24 @@ export default function BookingsManagement() {
                       >
                         {(b.status === "confirmed") && <Pencil />}
                       </button>
+
+                      {b.source === "admin-manual" &&
+                        b.paymentMode === "card-link" &&
+                        b.paymentStatus !== "paid" &&
+                        b.status !== "cancelled" && (
+                          <button
+                            onClick={() => handleResendLink(b)}
+                            disabled={resendingId === b._id}
+                            title="Resend payment link"
+                            className={`px-3 py-1 text-xs ${
+                              resendingId === b._id
+                                ? "text-gray-500"
+                                : "text-primary hover:text-primary/80"
+                            }`}
+                          >
+                            <Send size={16} />
+                          </button>
+                        )}
 
                       {/* <button */}
                       {/*   onClick={() => { */}

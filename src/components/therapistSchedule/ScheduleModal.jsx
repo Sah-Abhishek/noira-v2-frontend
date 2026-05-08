@@ -23,21 +23,31 @@ export default function ScheduleModal({
 
   if (!isModalOpen) return null;
 
-  // Generate hours for dropdown
-  const generateHours = () => {
+  // Generate hours for dropdown.
+  // Start time: 00..23. End time: 00..23 plus a final "24" to mean midnight
+  // at end of the current day (so therapists can register 23:30 → 24:00).
+  const generateHours = (includeEndOfDay = false) => {
     const hours = [];
-    for (let hour = 0; hour < 24; hour++) {
+    const max = includeEndOfDay ? 24 : 23;
+    for (let hour = 0; hour <= max; hour++) {
       const hourStr = hour.toString().padStart(2, "0");
-      hours.push({ value: hourStr, label: hourStr }); // ✅ 24-hour format
+      hours.push({ value: hourStr, label: hourStr });
     }
     return hours;
   };
 
-  const hourOptions = generateHours();
+  const startHourOptions = generateHours(false);
+  const endHourOptions = generateHours(true);
   const minuteOptions = [
     { value: '00', label: ':00' },
     { value: '30', label: ':30' }
   ];
+
+  const toMinutes = (time) => {
+    if (!time) return NaN;
+    const [h, m] = time.split(':').map(Number);
+    return h * 60 + m;
+  };
 
   // Parse time components
   const parseTime = (timeStr) => {
@@ -53,6 +63,12 @@ export default function ScheduleModal({
 
   const startTimeParts = parseTime(startTime);
   const endTimeParts = parseTime(endTime);
+
+  // 24:00 only allows :00 minutes (anything past 24:00 is the next day).
+  const isEndAt24 = endTimeParts.hour === '24';
+  const endMinuteOptions = isEndAt24
+    ? [{ value: '00', label: ':00' }]
+    : minuteOptions;
 
   const handleSave = async () => {
     if (!availabilityData[selectedDay]) {
@@ -115,7 +131,17 @@ export default function ScheduleModal({
   };
 
   const addSlot = () => {
-    if (!startTime || !endTime || startTime >= endTime) {
+    const startMin = toMinutes(startTime);
+    const endMin = toMinutes(endTime);
+
+    if (
+      !startTime ||
+      !endTime ||
+      Number.isNaN(startMin) ||
+      Number.isNaN(endMin) ||
+      endMin <= startMin ||
+      endMin > 24 * 60
+    ) {
       toast.error("Please enter a valid time slot");
       return;
     }
@@ -123,21 +149,20 @@ export default function ScheduleModal({
     setAvailabilityData((prev) => {
       const newDaySlots = prev[selectedDay] ? [...prev[selectedDay]] : [];
 
-      // ✅ Check for overlaps
+      // ✅ Check for overlaps (compare in minutes so 24:00 sorts correctly)
       const overlap = newDaySlots.some((slot) => {
-        return (
-          (startTime < slot.end && endTime > slot.start) // overlap condition
-        );
+        const sStart = toMinutes(slot.start);
+        const sEnd = toMinutes(slot.end);
+        return startMin < sEnd && endMin > sStart;
       });
 
       if (overlap) {
         toast.error("This slot overlaps with an existing slot");
-        return prev; // 🚫 don't add the slot
+        return prev;
       }
 
-      // ✅ Add only if no overlap
       newDaySlots.push({ start: startTime, end: endTime });
-      newDaySlots.sort((a, b) => a.start.localeCompare(b.start));
+      newDaySlots.sort((a, b) => toMinutes(a.start) - toMinutes(b.start));
       return { ...prev, [selectedDay]: newDaySlots };
     });
 
@@ -304,7 +329,19 @@ export default function ScheduleModal({
 
           {/* Add Slot */}
           <div className="glass-morphism p-4 rounded-xl border border-white/10">
-            <h5 className="font-medium mb-3">Add Time Slot</h5>
+            <div className="flex items-center justify-between mb-3">
+              <h5 className="font-medium">Add Time Slot</h5>
+              <button
+                type="button"
+                onClick={() => {
+                  setStartTime("00:00");
+                  setEndTime("24:00");
+                }}
+                className="text-xs px-3 py-1 rounded-full border border-primary text-primary hover:bg-primary/10 transition"
+              >
+                Cover full day (00:00–24:00)
+              </button>
+            </div>
             <div className="grid grid-cols-2 gap-4 mb-4">
               {/* Start Time */}
               <div>
@@ -318,7 +355,7 @@ export default function ScheduleModal({
                     className="flex-1 bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white text-sm"
                   >
                     <option value="">Hour</option>
-                    {hourOptions.map((hour) => (
+                    {startHourOptions.map((hour) => (
                       <option key={hour.value} value={hour.value}>
                         {hour.label}
                       </option>
@@ -347,11 +384,16 @@ export default function ScheduleModal({
                 <div className="flex gap-2">
                   <select
                     value={endTimeParts.hour}
-                    onChange={(e) => setEndTime(formatTime(e.target.value, endTimeParts.minute || '00'))}
+                    onChange={(e) => {
+                      const h = e.target.value;
+                      // 24 implies end-of-day; force minutes to :00
+                      const m = h === '24' ? '00' : (endTimeParts.minute || '00');
+                      setEndTime(formatTime(h, m));
+                    }}
                     className="flex-1 bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white text-sm"
                   >
                     <option value="">Hour</option>
-                    {hourOptions.map((hour) => (
+                    {endHourOptions.map((hour) => (
                       <option key={hour.value} value={hour.value}>
                         {hour.label}
                       </option>
@@ -360,16 +402,22 @@ export default function ScheduleModal({
                   <select
                     value={endTimeParts.minute}
                     onChange={(e) => setEndTime(formatTime(endTimeParts.hour || '00', e.target.value))}
-                    className="w-20 bg-gray-800 border border-gray-600 rounded-lg px-2 py-2 text-white text-sm"
+                    disabled={isEndAt24}
+                    className="w-20 bg-gray-800 border border-gray-600 rounded-lg px-2 py-2 text-white text-sm disabled:opacity-60 disabled:cursor-not-allowed"
                   >
                     <option value="">Min</option>
-                    {minuteOptions.map((minute) => (
+                    {endMinuteOptions.map((minute) => (
                       <option key={minute.value} value={minute.value}>
                         {minute.label}
                       </option>
                     ))}
                   </select>
                 </div>
+                {isEndAt24 && (
+                  <p className="text-[11px] text-gray-500 mt-1">
+                    24:00 = end of day (covers the 23:30 slot).
+                  </p>
+                )}
               </div>
             </div>
             <button

@@ -50,6 +50,7 @@ import TherapistProfileTherapist from "./components/TherspistProfile/TherapistPr
 import EditService from "./components/serviceManagement/EditService.jsx";
 import EditTherapistProfileAdmin from "./components/Admin/EditTherapistProfileAdmin.jsx";
 import BookingsManagement from "./components/Admin/BookingsManagement.jsx"
+import ManualBooking from "./components/Admin/ManualBooking.jsx"
 import UserLayout from "./layouts/UserLayout.jsx";
 import UserEditProfile from "./components/user/UserEditProfile.jsx";
 import MyBookings from "./components/user/MyBookings.jsx";
@@ -208,6 +209,7 @@ const AppRoutes = () => {
           <Route path="edittherapistprofileadmin/:id" element={<EditTherapistProfileAdmin />} />
           <Route path="editservice/:id" element={<EditService />} />
           <Route path="bookingsmanagement" element={<BookingsManagement />} />
+          <Route path="manualbooking" element={<ManualBooking />} />
           <Route path="usermanagement" element={<UsersManagement />} />
           <Route path="adminprofile" element={<AdminProfile />} />
           <Route path="admineditprofile" element={<AdminEditProfile />} />
