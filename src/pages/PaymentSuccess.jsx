@@ -45,7 +45,7 @@ const PaymentSuccess = () => {
       // redirect after save
       navigate("/user/mybookings");
     } catch (err) {
-      toast.error("Failed to save address");
+      toast.error(err?.response?.data?.message || "Failed to save address");
       console.error(err);
     } finally {
       setLoading(false);

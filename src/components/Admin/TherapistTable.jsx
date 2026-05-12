@@ -8,6 +8,39 @@ import { useNavigate } from "react-router-dom";
 import { CalendarCheck } from "lucide-react";
 import TherapistScheduleModalAdmin from "./TherapistScheduleModalAdmin.jsx";
 
+function TherapistAvatar({ src, alt }) {
+  const [errored, setErrored] = useState(false);
+  const showFallback = !src || errored;
+
+  if (showFallback) {
+    return (
+      <div
+        role="img"
+        aria-label={alt || "No profile image"}
+        className="w-12 h-12 rounded-full object-cover border border-white/20 bg-[#1a1a1a] flex items-center justify-center text-gray-500"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          fill="currentColor"
+          aria-hidden="true"
+          className="w-7 h-7"
+        >
+          <path d="M12 12c2.7 0 4.9-2.2 4.9-4.9S14.7 2.2 12 2.2 7.1 4.4 7.1 7.1 9.3 12 12 12zm0 2.4c-3.3 0-9.8 1.6-9.8 4.9v2.4h19.6v-2.4c0-3.3-6.5-4.9-9.8-4.9z" />
+        </svg>
+      </div>
+    );
+  }
+
+  return (
+    <img
+      src={src}
+      alt={alt}
+      className="w-12 h-12 rounded-full object-cover border border-white/20"
+      onError={() => setErrored(true)}
+    />
+  );
+}
+
 export default function TherapistTable({
   therapists,
   loading,
@@ -157,10 +190,9 @@ export default function TherapistTable({
 
                 {/* Profile */}
                 <td className="p-3">
-                  <img
-                    src={t.avatar_url || "https://via.placeholder.com/48"}
+                  <TherapistAvatar
+                    src={t.avatar_url}
                     alt={t.profile?.title || t.name?.first}
-                    className="w-12 h-12 rounded-full object-cover border border-white/20"
                   />
                 </td>
 

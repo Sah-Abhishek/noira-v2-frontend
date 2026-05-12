@@ -12,6 +12,27 @@ const iconMap = {
   'The NOIRA Ritual': leave,
 };
 
+// Editorial copy for The NOIRA Collection, keyed by service title.
+const editorial = {
+  'Classic Reset': {
+    description:
+      'A calming full-body recovery experience designed to ease tension, regulate the nervous system, and restore physical balance.',
+    recommendedFor:
+      'Stress recovery, first-time guests, nervous system reset',
+  },
+  'Deep Release': {
+    description:
+      'Targeted pressure and restorative techniques designed to release deep muscular tension, fatigue, and physical overload.',
+    recommendedFor: 'Travel fatigue, muscle recovery, active lifestyles',
+  },
+  'The NOIRA Ritual': {
+    description:
+      'An immersive signature experience combining slow restorative techniques, calming sensory elements, and intentional body recovery rituals designed to quiet the nervous system and restore deep calm.',
+    recommendedFor:
+      'Executive burnout, emotional decompression, deep relaxation',
+  },
+};
+
 const apiUrl = import.meta.env.VITE_API_URL;
 
 const fadeInUp = {
@@ -64,10 +85,10 @@ const Services = () => {
         variants={fadeInUp}
       >
         <h2 className="text-3xl sm:text-4xl text-[#D59940] font-braven font-bold">
-          Our Services
+          The NOIRA Collection — Signature Experiences
         </h2>
         <p className={`${descriptionText} mt-4 text-sm sm:text-base`}>
-          Premium wellness treatments tailored to your needs
+          Private recovery rituals designed for modern luxury living.
         </p>
       </motion.div>
 
@@ -77,14 +98,14 @@ const Services = () => {
           <motion.div
             key={index}
             className={`
-              relative flex flex-col h-full 
+              relative flex flex-col h-full
               rounded-3xl transition-all duration-300
               shadow-xl overflow-hidden
               ${isDarkMode
                 ? 'bg-gradient-to-br from-[#0c0c0c] to-[#1a1a1a] border border-gray-800'
                 : 'bg-gray-100 border border-gray-300'
               }
-              hover:shadow-2xl hover:shadow-[#C49E5B]/20 
+              hover:shadow-2xl hover:shadow-[#C49E5B]/20
               hover:-translate-y-2
             `}
             initial="hidden"
@@ -120,9 +141,15 @@ const Services = () => {
                 </h3>
               </div>
 
-              <p className={`${descriptionText} text-sm sm:text-base mb-4 flex-grow`}>
-                {service.description}
+              <p className={`${descriptionText} text-sm sm:text-base mb-3`}>
+                {editorial[service.title]?.description || service.description}
               </p>
+              {editorial[service.title]?.recommendedFor && (
+                <p className={`${descriptionText} text-sm sm:text-base mb-4 flex-grow`}>
+                  <span className="font-semibold text-[#D59940]">Recommended for: </span>
+                  {editorial[service.title].recommendedFor}
+                </p>
+              )}
 
               {/* Options with all prices */}
               <div className="mb-4">
@@ -152,6 +179,61 @@ const Services = () => {
           </motion.div>
         ))}
       </div>
+
+      {/* Editorial tagline strip */}
+      <motion.div
+        className="max-w-5xl mx-auto mt-16 text-center"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+        variants={fadeInUp}
+      >
+        <p className={`${descriptionText} text-base sm:text-lg`}>
+          Private wellness experiences across London.{' '}
+          <span className="font-semibold text-[#D59940]">
+            Discreet. Restorative. Effortless.
+          </span>
+        </p>
+      </motion.div>
+
+      {/* NOIRA Private Concierge CTA */}
+      <motion.div
+        className="max-w-5xl mx-auto mt-14 text-center"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+        variants={fadeInUp}
+      >
+        <p className="text-xs sm:text-sm tracking-[0.4em] uppercase text-[#D59940] mb-3">
+          NOIRA Private Concierge
+        </p>
+        <a
+          href="tel:+447884660894"
+          className={`block text-2xl sm:text-3xl font-braven mb-8 hover:text-[#D59940] transition ${
+            isDarkMode ? 'text-white' : 'text-black'
+          }`}
+        >
+          +44 7884 660894
+        </a>
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <button
+            onClick={handleOnClick}
+            className="px-8 py-3 rounded-full text-sm font-semibold tracking-wider uppercase
+              bg-[#D59940] text-black shadow-lg shadow-[#C49E5B]/25 hover:shadow-[#C49E5B]/40 transition-all"
+          >
+            Request Concierge Booking
+          </button>
+          <a
+            href="https://wa.me/447884660894"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-8 py-3 rounded-full text-sm font-semibold tracking-wider uppercase
+              border border-[#D59940] text-[#D59940] hover:bg-[#D59940] hover:text-black transition-all"
+          >
+            WhatsApp Concierge
+          </a>
+        </div>
+      </motion.div>
     </section>
   );
 };

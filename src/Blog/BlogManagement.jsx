@@ -15,6 +15,83 @@ import {
 
 const API_BASE = import.meta.env.VITE_API_URL + '/blog';
 
+// Topic-matched professional photos for blog cards that have no
+// banner image (or whose Cloudinary upload never finished and left
+// the backend's "Uploading..." placeholder in the DB).
+const UNSPLASH = (id) =>
+  `https://images.unsplash.com/photo-${id}?w=1200&q=80&auto=format&fit=crop`;
+
+const BLOG_IMAGE_DEFAULT = UNSPLASH('1544161515-4ab6ce6db874');
+
+// Each category has its own pool so two cards in the same category
+// don't show the same photo. A stable hash of blog._id picks the slot.
+const BLOG_IMAGE_CATEGORY_MAP = [
+  { match: /deep.*tissue|sports|recovery|muscle/i, urls: [
+    UNSPLASH('1591343395082-e120087004b4'),
+    UNSPLASH('1554244933-d876deb6b2ff'),
+  ]},
+  { match: /in[- ]?home|at home|home.*wellness/i, urls: [
+    UNSPLASH('1600334129128-685c5582fd35'),
+    UNSPLASH('1696841212541-449ca29397cc'),
+  ]},
+  { match: /mobile.*massage|outcall|on[- ]?demand/i, urls: [
+    UNSPLASH('1540555700478-4be289fbecef'),
+    UNSPLASH('1745327883508-b6cd32e5dde5'),
+  ]},
+  { match: /health.*wellness|health/i, urls: [
+    UNSPLASH('1515377905703-c4788e51af15'),
+    UNSPLASH('1571019613454-1cb2f99b2d8b'),
+  ]},
+  { match: /career|lifestyle|therapy|therapist/i, urls: [
+    UNSPLASH('1545205597-3d9d02c29597'),
+    UNSPLASH('1741522509438-a120c0bb5e88'),
+  ]},
+  { match: /wellness|spa|relax/i, urls: [
+    UNSPLASH('1639162906614-0603b0ae95fd'),
+    UNSPLASH('1640095889747-2090ee12fa7d'),
+    UNSPLASH('1519823551278-64ac92734fb1'),
+  ]},
+];
+
+const isBrokenBlogImage = (url) =>
+  !url || /via\.placeholder\.com|Uploading|No\+Image/i.test(url);
+
+const hashBlogKey = (s) => {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = ((h << 5) - h + s.charCodeAt(i)) | 0;
+  return Math.abs(h);
+};
+
+const pickBlogFallbackImage = (blog) => {
+  const haystack = `${blog?.category || ''} ${blog?.title || ''} ${blog?.slug || ''}`;
+  const key = String(blog?._id || blog?.slug || blog?.title || '');
+  for (const { match, urls } of BLOG_IMAGE_CATEGORY_MAP) {
+    if (match.test(haystack)) return urls[hashBlogKey(key) % urls.length];
+  }
+  return BLOG_IMAGE_DEFAULT;
+};
+
+function BlogCardImage({ blog }) {
+  const stored = blog.bannerImages?.[0] || blog.featured_image;
+  const initial = isBrokenBlogImage(stored) ? pickBlogFallbackImage(blog) : stored;
+  const [src, setSrc] = useState(initial);
+
+  const handleError = () => {
+    const categoryUrl = pickBlogFallbackImage(blog);
+    if (src !== categoryUrl) setSrc(categoryUrl);
+    else if (src !== BLOG_IMAGE_DEFAULT) setSrc(BLOG_IMAGE_DEFAULT);
+  };
+
+  return (
+    <img
+      src={src}
+      alt={blog.title}
+      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+      onError={handleError}
+    />
+  );
+}
+
 export default function BlogManagement() {
   const navigate = useNavigate();
   const [blogs, setBlogs] = useState([]);
@@ -200,15 +277,7 @@ export default function BlogManagement() {
               >
                 {/* Image */}
                 <div className="relative h-48 overflow-hidden">
-                  <img
-                    src={
-                      blog.bannerImages?.[0] ||
-                      blog.featured_image ||
-                      'https://via.placeholder.com/400x200?text=No+Image'
-                    }
-                    alt={blog.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
+                  <BlogCardImage blog={blog} />
                   <div className="absolute top-3 left-3">
                     <span className="bg-amber-500/90 text-black text-xs font-semibold px-3 py-1 rounded-full">
                       {blog.category}

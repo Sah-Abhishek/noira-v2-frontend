@@ -1245,33 +1245,40 @@ const ManualBooking = () => {
                   Open
                 </a>
               </div>
-              {lastPaymentLink.delivery && (
-                <div className="text-xs text-gray-400">
-                  {lastPaymentLink.delivery.sent?.length > 0 && (
-                    <span className="text-green-400">
-                      Sent via: {lastPaymentLink.delivery.sent.join(", ")}.{" "}
-                    </span>
-                  )}
-                  {lastPaymentLink.delivery.skipped?.length > 0 && (
-                    <span className="text-yellow-400">
-                      Skipped:{" "}
-                      {lastPaymentLink.delivery.skipped
-                        .map((s) => `${s.channel} (${s.reason})`)
-                        .join(", ")}
-                      .{" "}
-                    </span>
-                  )}
-                  {lastPaymentLink.delivery.failed?.length > 0 && (
-                    <span className="text-red-400">
-                      Failed:{" "}
-                      {lastPaymentLink.delivery.failed
-                        .map((f) => `${f.channel} (${f.error})`)
-                        .join(", ")}
-                      .
-                    </span>
-                  )}
-                </div>
-              )}
+              {lastPaymentLink.delivery && (() => {
+                // Hide WhatsApp from the delivery banner — Twilio sender approval
+                // is a separate prerequisite and we don't want admins seeing it
+                // every time they create a manual booking.
+                const sent = (lastPaymentLink.delivery.sent || [])
+                  .filter((c) => c !== "whatsapp");
+                const skipped = (lastPaymentLink.delivery.skipped || [])
+                  .filter((s) => s.channel !== "whatsapp");
+                const failed = (lastPaymentLink.delivery.failed || [])
+                  .filter((f) => f.channel !== "whatsapp");
+                return (
+                  <div className="text-xs text-gray-400">
+                    {sent.length > 0 && (
+                      <span className="text-green-400">
+                        Sent via: {sent.join(", ")}.{" "}
+                      </span>
+                    )}
+                    {skipped.length > 0 && (
+                      <span className="text-yellow-400">
+                        Skipped:{" "}
+                        {skipped.map((s) => `${s.channel} (${s.reason})`).join(", ")}
+                        .{" "}
+                      </span>
+                    )}
+                    {failed.length > 0 && (
+                      <span className="text-red-400">
+                        Failed:{" "}
+                        {failed.map((f) => `${f.channel} (${f.error})`).join(", ")}
+                        .
+                      </span>
+                    )}
+                  </div>
+                );
+              })()}
             </div>
           )}
 

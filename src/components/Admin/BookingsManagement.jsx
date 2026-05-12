@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Search, ChevronLeft, ChevronRight, X, Pencil, Eye, Send } from "lucide-react";
+import { Search, ChevronLeft, ChevronRight, X, Pencil, Eye, Send, Check } from "lucide-react";
 import toast from "react-hot-toast";
 import BookingsTableSkeleton from "./BookingsTableSkeleton";
 import CancelBookingModal from "./CancelBookingConfirmModal.jsx";
@@ -29,6 +29,32 @@ export default function BookingsManagement() {
 
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [resendingId, setResendingId] = useState(null);
+  const [markingPaidId, setMarkingPaidId] = useState(null);
+
+  const handleMarkPaid = async (booking) => {
+    if (markingPaidId) return;
+    if (!window.confirm(
+      `Mark booking ${booking.bookingCode || booking._id.slice(-6)} as paid? This confirms the customer has completed payment.`
+    )) {
+      return;
+    }
+    try {
+      setMarkingPaidId(booking._id);
+      await axios.post(
+        `${apiUrl}/admin/booking/${booking._id}/mark-paid`,
+        {},
+        { headers: { Authorization: `Bearer ${adminjwt}` } }
+      );
+      toast.success("Booking marked as paid");
+      fetchBookings(page);
+    } catch (err) {
+      const msg =
+        err.response?.data?.message || err.message || "Could not mark as paid";
+      toast.error(msg);
+    } finally {
+      setMarkingPaidId(null);
+    }
+  };
 
   const handleResendLink = async (booking) => {
     if (resendingId) return;
@@ -275,18 +301,32 @@ export default function BookingsManagement() {
                         b.paymentMode === "card-link" &&
                         b.paymentStatus !== "paid" &&
                         b.status !== "cancelled" && (
-                          <button
-                            onClick={() => handleResendLink(b)}
-                            disabled={resendingId === b._id}
-                            title="Resend payment link"
-                            className={`px-3 py-1 text-xs ${
-                              resendingId === b._id
-                                ? "text-gray-500"
-                                : "text-primary hover:text-primary/80"
-                            }`}
-                          >
-                            <Send size={16} />
-                          </button>
+                          <>
+                            <button
+                              onClick={() => handleResendLink(b)}
+                              disabled={resendingId === b._id}
+                              title="Resend payment link"
+                              className={`px-3 py-1 text-xs ${
+                                resendingId === b._id
+                                  ? "text-gray-500"
+                                  : "text-primary hover:text-primary/80"
+                              }`}
+                            >
+                              <Send size={16} />
+                            </button>
+                            <button
+                              onClick={() => handleMarkPaid(b)}
+                              disabled={markingPaidId === b._id}
+                              title="Mark as paid"
+                              className={`px-3 py-1 text-xs ${
+                                markingPaidId === b._id
+                                  ? "text-gray-500"
+                                  : "text-green-500 hover:text-green-400"
+                              }`}
+                            >
+                              <Check size={16} />
+                            </button>
+                          </>
                         )}
 
                       {/* <button */}

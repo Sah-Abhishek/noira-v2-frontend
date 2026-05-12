@@ -44,7 +44,7 @@ export default function MonthlySubscription() {
             <div className="text-center mb-5 sm:mb-6">
               <h2
                 id="office-wellness-heading"
-                className="text-xl sm:text-2xl lg:text-3xl font-bold text-primary uppercase tracking-wide mb-2"
+                className="text-xl sm:text-2xl lg:text-3xl font-bold font-braven text-primary uppercase tracking-wide mb-2"
               >
                 OFFICE WELLNESS
                 <br className="hidden sm:block" />
@@ -136,7 +136,7 @@ export default function MonthlySubscription() {
             <div className="text-center mb-5 sm:mb-6">
               <h2
                 id="weekly-ritual-heading"
-                className="text-xl sm:text-2xl lg:text-3xl font-bold text-primary uppercase tracking-wide mb-1"
+                className="text-xl sm:text-2xl lg:text-3xl font-bold font-braven text-primary uppercase tracking-wide mb-1"
               >
                 WEEKLY RITUAL
               </h2>

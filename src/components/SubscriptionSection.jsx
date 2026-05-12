@@ -7,6 +7,10 @@ import {
   FaCrown,
   FaShieldHalved,
   FaClock,
+  FaUserCheck,
+  FaHeadset,
+  FaHotel,
+  FaCircleInfo,
 } from "react-icons/fa6";
 
 export default function SubscriptionsSection() {
@@ -80,12 +84,11 @@ export default function SubscriptionsSection() {
         {/* ===== Header ===== */}
         <header className="text-center mb-16">
           <h1 className="text-3xl sm:text-4xl text-[#D59940] font-braven font-bold mt-15">
-            Subscriptions <br />
+            NOIRA PRIVÉ Membership &amp; Corporate Recovery <br />
           </h1>
 
-          <span className="text-gray-400 font text-2xl">(Valid 3 Months)</span>
           <p className="text-gray-300 text-xl mt-5 mb-8">
-            Choose your duration: 60 / 90 / 120 minutes
+            Private wellness memberships designed for modern luxury living.
           </p>
 
           {/* ===== Duration Selector ===== */}
@@ -119,12 +122,13 @@ export default function SubscriptionsSection() {
         >
           <SubscriptionCard
             pack="3"
-            title="3-Pack"
-            desc="Perfect for trying our services"
+            title="Essential"
+            desc="For consistent recovery, calm, and weekly wellness rituals."
             benefits={[
-              { icon: <FaCheck />, text: "3 massage sessions" },
+              { icon: <FaCheck />, text: "3 private wellness sessions" },
+              { icon: <FaCalendar />, text: "Preferred booking access" },
+              { icon: <FaStar />, text: "Premium therapist matching" },
               { icon: <FaCalendar />, text: "Valid for 3 months" },
-              { icon: <FaStar />, text: "Premium therapists" },
             ]}
             pricing={{
               "60": { total: "£180", per: "£60", duration: "60 minutes each" },
@@ -141,12 +145,13 @@ export default function SubscriptionsSection() {
 
           <SubscriptionCard
             pack="6"
-            title="6-Pack"
-            desc="Great value with gift option"
-            gift="Can gift one session"
+            title="Signature"
+            desc="Elevated wellness access designed for modern lifestyles."
+            gift="1 complimentary guest session"
             benefits={[
-              { icon: <FaCheck />, text: "6 massage sessions" },
-              { icon: <FaGift />, text: "1 giftable session" },
+              { icon: <FaCheck />, text: "6 private wellness sessions" },
+              { icon: <FaCrown />, text: "Priority booking" },
+              { icon: <FaStar />, text: "Preferred therapist selection" },
               { icon: <FaCalendar />, text: "Valid for 3 months" },
             ]}
             pricing={{
@@ -164,15 +169,15 @@ export default function SubscriptionsSection() {
 
           <SubscriptionCard
             pack="9"
-            title="9-Pack"
-            desc="Ultimate value package"
-            gift="2 giftable sessions"
+            title="NOIRA Black"
+            desc="Our most exclusive wellness membership experience."
+            gift="Complimentary guest experiences"
             best
-            extra={[{ icon: <FaStar />, text: "1 complimentary (10 total)" }]}
+            extra={[{ icon: <FaStar />, text: "Priority same-day access" }]}
             benefits={[
-              { icon: <FaCheck />, text: "9 + 1 massage sessions" },
-              { icon: <FaGift />, text: "2 giftable sessions" },
-              { icon: <FaCrown />, text: "Priority booking" },
+              { icon: <FaCheck />, text: "9 + 1 private wellness sessions" },
+              { icon: <FaCrown />, text: "Dedicated booking concierge" },
+              { icon: <FaStar />, text: "VIP scheduling & exclusive rituals" },
             ]}
             pricing={{
               "60": { total: "£450", per: "£50", duration: "60 minutes each" },
@@ -188,14 +193,146 @@ export default function SubscriptionsSection() {
           />
         </div>
 
-        {/* ===== Footer ===== */}
-        <footer className="text-center mt-16">
-          <p className="text-gray-400 text-sm mb-6 flex justify-center items-center">
-            <FaShieldHalved className="mr-2 text-primary" aria-hidden="true" />
-            All subscriptions include premium therapist selection and flexible
-            scheduling
+        {/* ===== Executive Recovery + Private Ritual Membership ===== */}
+        <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto mt-20">
+          {/* Executive Recovery — highlighted offering */}
+          <div className="rounded-2xl p-8 bg-[#D59940]/10 border border-[#D59940]/40">
+            <h3 className="text-2xl font-braven font-bold text-[#D59940] mb-4">
+              Executive Recovery Experiences
+            </h3>
+            <p className="text-gray-300 mb-5">
+              Luxury in-office wellness experiences designed to restore focus,
+              reduce stress, and elevate team wellbeing across leadership teams
+              and executive environments.
+            </p>
+            <ul className="space-y-3 text-gray-300 list-disc pl-5 marker:text-[#D59940]">
+              <li>
+                <span className="font-semibold text-white">
+                  Executive Reset:
+                </span>{" "}
+                Private full-day wellness service for leadership teams
+              </li>
+              <li>
+                <span className="font-semibold text-white">
+                  Founders Recovery Experience:
+                </span>{" "}
+                Curated recovery for high-performance teams, events, and private
+                corporate environments
+              </li>
+            </ul>
+          </div>
+
+          {/* Private Ritual Membership */}
+          <div className="rounded-2xl p-8 border border-white/10">
+            <h3 className="text-2xl font-braven font-bold text-[#D59940] mb-4">
+              Private Ritual Membership
+            </h3>
+            <p className="text-gray-300 mb-5">
+              A recurring wellness ritual tailored to your schedule and
+              lifestyle. Available in 60 / 90 / 120-minute formats.
+            </p>
+            <ul className="space-y-3 text-gray-300 list-disc pl-5 marker:text-[#D59940]">
+              <li>Recurring private sessions</li>
+              <li>Priority scheduling</li>
+              <li>Luxury recovery experience</li>
+              <li>Complimentary guest session</li>
+              <li>Preferred member access</li>
+            </ul>
+          </div>
+        </div>
+
+        {/* ===== Tagline strip ===== */}
+        <div className="max-w-6xl mx-auto mt-12 text-center">
+          <p className="text-gray-300 text-base sm:text-lg">
+            Designed for modern luxury living.{" "}
+            <span className="font-semibold text-[#D59940]">
+              Recovery is no longer optional.
+            </span>
           </p>
-        </footer>
+        </div>
+
+        {/* ===== 4 Feature cards ===== */}
+        <div className="grid md:grid-cols-2 gap-6 md:gap-8 max-w-6xl mx-auto mt-16">
+          <div className="rounded-2xl p-6 sm:p-8 border border-white/10 bg-gradient-to-br from-[#0c0c0c] to-[#1a1a1a] shadow-lg transition-all duration-300 hover:border-[#D59940]/40 hover:shadow-2xl hover:shadow-[#C49E5B]/20 hover:-translate-y-1">
+            <FaShieldHalved
+              className="text-3xl text-[#D59940] mb-3"
+              aria-hidden="true"
+            />
+            <h4 className="text-xl font-braven text-[#D59940] mb-2">
+              Discreet Service
+            </h4>
+            <p className="text-gray-300">
+              Complete privacy and discretion at every stage of the client
+              experience.
+            </p>
+          </div>
+          <div className="rounded-2xl p-6 sm:p-8 border border-white/10 bg-gradient-to-br from-[#0c0c0c] to-[#1a1a1a] shadow-lg transition-all duration-300 hover:border-[#D59940]/40 hover:shadow-2xl hover:shadow-[#C49E5B]/20 hover:-translate-y-1">
+            <FaUserCheck
+              className="text-3xl text-[#D59940] mb-3"
+              aria-hidden="true"
+            />
+            <h4 className="text-xl font-braven text-[#D59940] mb-2">
+              Vetted Therapists
+            </h4>
+            <p className="text-gray-300">
+              Every NOIRA therapist is rigorously selected for expertise and
+              professionalism.
+            </p>
+          </div>
+          <div className="rounded-2xl p-6 sm:p-8 border border-white/10 bg-gradient-to-br from-[#0c0c0c] to-[#1a1a1a] shadow-lg transition-all duration-300 hover:border-[#D59940]/40 hover:shadow-2xl hover:shadow-[#C49E5B]/20 hover:-translate-y-1">
+            <FaHeadset
+              className="text-3xl text-[#D59940] mb-3"
+              aria-hidden="true"
+            />
+            <h4 className="text-xl font-braven text-[#D59940] mb-2">
+              Private Concierge
+            </h4>
+            <p className="text-gray-300">
+              Dedicated concierge support available via WhatsApp and direct line
+              at all times.
+            </p>
+          </div>
+          <div className="rounded-2xl p-6 sm:p-8 border border-white/10 bg-gradient-to-br from-[#0c0c0c] to-[#1a1a1a] shadow-lg transition-all duration-300 hover:border-[#D59940]/40 hover:shadow-2xl hover:shadow-[#C49E5B]/20 hover:-translate-y-1">
+            <FaHotel
+              className="text-3xl text-[#D59940] mb-3"
+              aria-hidden="true"
+            />
+            <h4 className="text-xl font-braven text-[#D59940] mb-2">
+              Hotels &amp; Partners
+            </h4>
+            <p className="text-gray-300">
+              A dedicated &quot;For Hotels &amp; Partners&quot; page supports
+              corporate partnership enquiries.
+            </p>
+          </div>
+        </div>
+
+        {/* ===== Concierge enquiry ===== */}
+        <div className="max-w-6xl mx-auto mt-12 text-center">
+          <p className="text-gray-300 text-base sm:text-lg">
+            Corporate partnership enquiries and concierge bookings:{" "}
+            <span className="font-semibold text-[#D59940]">
+              Speak To Concierge
+            </span>{" "}
+            or{" "}
+            <span className="font-semibold text-[#D59940]">
+              Corporate Partnership Inquiry
+            </span>
+            .
+          </p>
+        </div>
+
+        <div className="max-w-6xl mx-auto mt-10 text-center">
+          <p className="text-xs sm:text-sm tracking-[0.4em] uppercase text-[#D59940] mb-3">
+            NOIRA Private Concierge
+          </p>
+          <a
+            href="tel:+447884660894"
+            className="block text-2xl sm:text-3xl font-braven text-white hover:text-[#D59940] transition"
+          >
+            +44 7884 660894
+          </a>
+        </div>
       </div>
     </section>
   );
@@ -224,7 +361,7 @@ function SubscriptionCard({
 
   return (
     <article
-      className={`subscription-card glass-card rounded-3xl p-8 cursor-pointer shadow-xl relative transition-all 
+      className={`subscription-card glass-card rounded-3xl p-8 cursor-pointer shadow-xl relative transition-all flex flex-col h-full
       ${
         best
           ? "border-2 border-primary relative before:content-['BEST_VALUE'] before:absolute before:top-[-12px] before:right-[-10px] before:bg-gradient-to-r before:from-primary before:to-yellow-200 before:text-black before:px-3 before:py-1 before:text-xs before:font-bold before:rounded-full before:rotate-12"
@@ -235,7 +372,7 @@ function SubscriptionCard({
     >
       {/* Header */}
       <header className="text-center mb-8">
-        <h2 className="text-3xl font-bold mb-2 text-yellow-200">{title}</h2>
+        <h2 className="text-3xl font-bold font-braven mb-2 text-yellow-200">{title}</h2>
         <p className="text-gray-400 text-sm">{desc}</p>
       </header>
 
@@ -274,7 +411,7 @@ function SubscriptionCard({
       </div>
 
       {/* Benefits */}
-      <ul className="space-y-3 mb-8" aria-label="Benefits list">
+      <ul className="space-y-3 mb-8 flex-grow" aria-label="Benefits list">
         {benefits.map((b, i) => (
           <li key={i} className="flex items-center text-gray-300">
             <span className="text-primary mr-3" aria-hidden="true">
