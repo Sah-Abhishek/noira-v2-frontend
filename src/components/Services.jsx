@@ -55,13 +55,19 @@ const Services = () => {
         const res = await fetch(`${apiUrl}/services/list`);
         const data = await res.json();
 
-        const mappedServices = data.map(service => ({
-          title: service.name,
-          description: service.description,
-          options: service.options, // 👈 keep full options here
-          icon: iconMap[service.name] || devineHand,
-          image: service.image_url,
-        }));
+        const mappedServices = data
+          .map(service => ({
+            title: service.name,
+            description: service.description,
+            options: service.options, // 👈 keep full options here
+            icon: iconMap[service.name] || devineHand,
+            image: service.image_url,
+          }))
+          .sort(
+            (a, b) =>
+              Math.min(...a.options.map(o => o.price.amount)) -
+              Math.min(...b.options.map(o => o.price.amount))
+          );
 
         setServices(mappedServices);
       } catch (err) {
@@ -151,22 +157,20 @@ const Services = () => {
                 </p>
               )}
 
-              {/* Options with all prices */}
+              {/* Entry price only */}
               <div className="mb-4">
                 <h4 className="text-xs uppercase tracking-wide mb-2 text-[#D59940]">
-                  Durations & Prices
+                  From
                 </h4>
-                <div className="flex flex-wrap gap-2">
-                  {service.options.map((opt, i) => (
-                    <button
-                      key={i}
-                      onClick={handleOnClick}
-                      className="px-3 py-1 rounded-full text-xs font-semibold text-[#D59940] border border-[#D59940] hover:bg-[#D59940] hover:text-black transition"
-                    >
-                      {opt.durationMinutes} min • £{opt.price.amount}
-                    </button>
-                  ))}
-                </div>
+                <button
+                  onClick={handleOnClick}
+                  className="px-3 py-1 rounded-full text-xs font-semibold text-[#D59940] border border-[#D59940] hover:bg-[#D59940] hover:text-black transition"
+                >
+                  Starting from £
+                  {Math.min(
+                    ...service.options.map((opt) => opt.price.amount)
+                  )}
+                </button>
               </div>
 
               <button

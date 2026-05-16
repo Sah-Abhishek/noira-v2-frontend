@@ -81,10 +81,12 @@ export default function MonthlySubscription() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="text-xl sm:text-2xl font-bold text-primary">
-                      £500
+                    <div className="text-sm sm:text-base font-semibold text-primary">
+                      Private Wellness Experience
                     </div>
-                    <div className="text-gray-400 text-xs">per day</div>
+                    <div className="text-gray-400 text-xs">
+                      Tailored to your team
+                    </div>
                   </div>
                 </div>
               </div>
@@ -107,10 +109,12 @@ export default function MonthlySubscription() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="text-xl sm:text-2xl font-bold text-primary">
-                      £700
+                    <div className="text-sm sm:text-base font-semibold text-primary">
+                      Pricing Available Upon Consultation
                     </div>
-                    <div className="text-gray-400 text-xs">per day</div>
+                    <div className="text-gray-400 text-xs">
+                      Bespoke arrangement
+                    </div>
                   </div>
                 </div>
               </div>
@@ -119,11 +123,11 @@ export default function MonthlySubscription() {
             <div className="text-center">
               <button
                 onClick={handleWhatsAppClick}
-                aria-label="Contact Noira Wellness on WhatsApp for Office Wellness Bundles"
+                aria-label="Request a private consultation for Office Wellness Bundles"
                 className="gold-border-hover px-6 sm:px-8 py-2.5 sm:py-3.5 rounded-full font-bold text-sm sm:text-base text-primary uppercase tracking-wide"
               >
                 <FontAwesomeIcon icon={faCalendarPlus} className="mr-2" />
-                Contact on WhatsApp
+                Request Consultation
               </button>
             </div>
           </article>
@@ -167,11 +171,7 @@ export default function MonthlySubscription() {
             </div>
 
             <ul className="flex-grow space-y-2 mb-5">
-              {[
-                { time: "60 min", price: "£240 / month" },
-                { time: "90 min", price: "£320 / month" },
-                { time: "120 min", price: "£480 / month" },
-              ].map((plan, i) => (
+              {["60 min", "90 min", "120 min"].map((time, i) => (
                 <li
                   key={i}
                   className="flex items-center justify-between py-2.5 border-b border-primary/20"
@@ -182,11 +182,11 @@ export default function MonthlySubscription() {
                       className="text-primary mr-2 text-xs sm:text-sm"
                     />
                     <span className="text-white font-medium text-sm">
-                      {plan.time}
+                      {time}
                     </span>
                   </div>
-                  <span className="text-primary font-bold text-sm sm:text-base">
-                    {plan.price}
+                  <span className="text-primary font-semibold text-xs sm:text-sm">
+                    Tailored Membership Plan
                   </span>
                 </li>
               ))}
@@ -214,11 +214,11 @@ export default function MonthlySubscription() {
             <div className="text-center">
               <button
                 onClick={handleWhatsAppClick}
-                aria-label="Contact Noira Wellness on WhatsApp for Weekly Ritual subscription"
+                aria-label="Enquire privately about the Weekly Ritual membership"
                 className="gold-border-hover px-6 sm:px-8 py-2.5 sm:py-3.5 rounded-full font-bold text-sm sm:text-base text-primary uppercase tracking-wide"
               >
                 <FontAwesomeIcon icon={faStar} className="mr-2" />
-                Contact on WhatsApp
+                Enquire Privately
               </button>
             </div>
           </article>
