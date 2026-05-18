@@ -13,7 +13,6 @@ import useBookingStore from "../../store/bookingStore";
 import FancyDropdown from "./FancyDropdown";
 import { User } from 'lucide-react';
 import useUserStore from "../../store/UserStore";
-import PostalCodeModal from "../PostalCodeModal";
 import toast from "react-hot-toast";
 import PageBanner from "../PageBanner";
 
@@ -40,9 +39,7 @@ export default function BrowseTherapists() {
   const navigate = useNavigate();
   const { setSelectedTherapist } = useBookingStore();
   const userjwt = localStorage.getItem("userjwt");
-  const isPostalCodeSaved = sessionStorage.getItem("postalCode") ? true : false;
   const { user } = useUserStore();
-  const [isPostalCodeModalOpen, setIsPostalCodeModalOpen] = useState(!isPostalCodeSaved);
   const postalCode = sessionStorage.getItem("postalCode") || user?.address?.PostalCode;
   const [noTherapistToastShown, setNoTherapistToastShown] = useState(false);
 
@@ -223,10 +220,6 @@ export default function BrowseTherapists() {
           onChange={(p) => setPage(p)}
         />
       </div>
-      {!user?.address &&
-        <PostalCodeModal isOpen={isPostalCodeModalOpen} onClose={() => setIsPostalCodeModalOpen(false)} />
-      }
-
     </div>
   );
 }
