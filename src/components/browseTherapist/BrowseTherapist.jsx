@@ -13,6 +13,7 @@ import useBookingStore from "../../store/bookingStore";
 import FancyDropdown from "./FancyDropdown";
 import { User } from 'lucide-react';
 import useUserStore from "../../store/UserStore";
+import PostalCodeModal from "../PostalCodeModal";
 import toast from "react-hot-toast";
 import PageBanner from "../PageBanner";
 
@@ -40,8 +41,21 @@ export default function BrowseTherapists() {
   const { setSelectedTherapist } = useBookingStore();
   const userjwt = localStorage.getItem("userjwt");
   const { user } = useUserStore();
-  const postalCode = sessionStorage.getItem("postalCode") || user?.address?.PostalCode;
+  const [postalCode, setPostalCode] = useState(
+    () => sessionStorage.getItem("postalCode") || user?.address?.PostalCode || ""
+  );
+  const [showPostcodeModal, setShowPostcodeModal] = useState(false);
   const [noTherapistToastShown, setNoTherapistToastShown] = useState(false);
+
+  const handlePostcodeModalClose = () => {
+    setShowPostcodeModal(false);
+    const updated = sessionStorage.getItem("postalCode");
+    if (updated && updated !== postalCode) {
+      setPostalCode(updated);
+      setPage(1);
+      setNoTherapistToastShown(false);
+    }
+  };
 
 
 
@@ -85,7 +99,7 @@ export default function BrowseTherapists() {
   useEffect(() => {
     fetchTherapists(page);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page]);
+  }, [page, postalCode]);
 
   /** Filter options */
   const serviceOptions = useMemo(() => {
@@ -147,6 +161,23 @@ export default function BrowseTherapists() {
             Filter Therapists
           </h3>
 
+          <div className="flex justify-center mb-4">
+            <div className="inline-flex items-center gap-2 bg-[#111] border border-primary/30 rounded-full px-4 py-2 text-sm sm:text-base">
+              <MapPin size={16} className="text-primary" />
+              <span className="text-gray-400">Postcode:</span>
+              <span className="text-primary font-semibold">
+                {postalCode || "Not set"}
+              </span>
+              <button
+                type="button"
+                onClick={() => setShowPostcodeModal(true)}
+                className="ml-2 text-xs sm:text-sm text-primary underline hover:text-primary/80 transition"
+              >
+                Change
+              </button>
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Services */}
             <FancyDropdown
@@ -201,7 +232,12 @@ export default function BrowseTherapists() {
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {filtered.map((t) => (
-              <TherapistCard key={t._id} t={t} />
+              <TherapistCard
+                key={t._id}
+                t={t}
+                hasPostalCode={!!postalCode}
+                onRequestPostcode={() => setShowPostcodeModal(true)}
+              />
             ))}
             {!filtered.length && (
               <div className="col-span-full text-center text-gray-400 py-12">
@@ -220,12 +256,17 @@ export default function BrowseTherapists() {
           onChange={(p) => setPage(p)}
         />
       </div>
+
+      <PostalCodeModal
+        isOpen={showPostcodeModal}
+        onClose={handlePostcodeModalClose}
+      />
     </div>
   );
 }
 
 /** Therapist Card */
-function TherapistCard({ t }) {
+function TherapistCard({ t, hasPostalCode = true, onRequestPostcode }) {
   const verified = t?.profile?.isVerified;
   const rawRating = t?.profile?.rating ?? 0;
   const rating =
@@ -243,6 +284,10 @@ function TherapistCard({ t }) {
 
 
   const handleSelectTherapist = () => {
+    if (!hasPostalCode) {
+      toast.error("Please select your postal code", { position: "top-right" });
+      return;
+    }
     setSelectedTherapist(t?.profile);
     navigate("/servicesbytherapist");
   };
